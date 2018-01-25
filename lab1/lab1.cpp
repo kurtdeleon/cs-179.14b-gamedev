@@ -5,12 +5,16 @@
 using namespace std;
 using namespace sf;
 
+#define radius 5
+
+
 RenderWindow window;
 
 int steps, numberOfControlPoints;
 float percentageSteps;
 vector<Vector2f> controlPoints;
 vector<VertexArray> interpolatedPoints;
+CircleShape circle[9999];
 
 void getInputs(){
 	cin >> steps >> numberOfControlPoints;
@@ -19,6 +23,13 @@ void getInputs(){
 	for (int i = 0; i < numberOfControlPoints; i++){
 		cin >> temp.x >> temp.y;
 		controlPoints.push_back(temp);
+		circle[i].setRadius(radius);
+		circle[i].setOrigin(radius,radius);
+		circle[i].setPosition(temp);
+		circle[i].setFillColor(Color::Transparent);
+		circle[i].setOutlineColor(Color::Green);
+		circle[i].setOutlineThickness(2);
+
 	}
 }
 
@@ -69,6 +80,9 @@ int main(void){
 		window.clear(Color::Black);
 		for (VertexArray bezierCurves : interpolatedPoints){
 			window.draw(bezierCurves);
+		}
+		for (int i = 0; i < numberOfControlPoints; i++){
+			window.draw(circle[i]);
 		}
 		window.display();
 	}
