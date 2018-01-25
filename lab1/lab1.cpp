@@ -36,16 +36,11 @@ VertexArray LERP(Vector2f a, Vector2f b, Vector2f c){
 		tempLERP.append(getSteppedPoint(x, y, ps));
 	}
 	tempLERP.append(c);
-	/*cout << "tempLERP!" << endl;
-	for (int i = 0; i < tempLERP.getVertexCount(); i++){
-		cout << tempLERP[i].position.x << ", " << tempLERP[i].position.y << endl;
-	}*/
 	return tempLERP;
-
 }
 
 void computeForCurves(){
-	for (int i = 0; i < numberOfControlPoints-2; i++){
+	for (int i = 0; i < numberOfControlPoints-2; i+=2){
 		interpolatedPoints.push_back(LERP(controlPoints[i], controlPoints[i+1], controlPoints[i+2]));
 	}
 }
@@ -62,7 +57,6 @@ int main(void){
 	getInputs();
 	computeForCurves();
 
-	//controls
 	while(window.isOpen()){
 		Event event;
 		while(window.pollEvent(event)){
@@ -73,8 +67,8 @@ int main(void){
 			}
 		}
 		window.clear(Color::Black);
-		for (VertexArray x : interpolatedPoints){
-			window.draw(x);
+		for (VertexArray bezierCurves : interpolatedPoints){
+			window.draw(bezierCurves);
 		}
 		window.display();
 	}
