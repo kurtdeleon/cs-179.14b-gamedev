@@ -6,24 +6,34 @@ using namespace std;
 using namespace sf;
 
 RenderWindow window;
+Font font;
 
 struct ControlPoint {
 	Vector2f pos;
 	CircleShape circle;
+	Text text;
 
-	ControlPoint(Vector2f x){
+	ControlPoint(Vector2f x, int y){
 		pos = x;
 		circle.setRadius(5);
 		circle.setOrigin(circle.getRadius(), circle.getRadius());
 		circle.setPosition(pos);
+		circle.setFillColor(Color::Green);
+		text.setFont(font);
+		text.setString(to_string(y+1));
+		text.setCharacterSize(12);
+		text.setFillColor(Color::Green);
+		text.setPosition(pos + Vector2f(12, -10));
 	}
 
 	Vector2f getPos() { return pos; }
 	void offsetPos(Vector2f offset) { 
 		pos -= offset;
 		circle.setPosition(pos);
+		text.setPosition(pos + Vector2f(12, -10));
 	}
 	void drawCircle() { window.draw(circle); }
+	void drawText() { window.draw(text); }
 	bool isClicked(Vector2f mousePos) { return circle.getGlobalBounds().contains(mousePos); }
 };
 
@@ -39,12 +49,13 @@ void initialize(){
 	hasSelectedACircle = false;
 	selectedCircle = 0;
 	previousMousePosition = Vector2f(Mouse::getPosition(window));
+	font.loadFromFile("pixelmix.ttf");
 	cin >> steps >> numberOfControlPoints;
 	percentageSteps = 1.0f / steps;
 	Vector2f temp;
 	for (int i = 0; i < numberOfControlPoints; i++){
 		cin >> temp.x >> temp.y;
-		ControlPoint cp{temp};
+		ControlPoint cp{temp, i};
 		arrayOfControlPoints.push_back(cp);
 	}
 }
@@ -120,7 +131,10 @@ int main(void){
 
 		window.clear(Color::Black);
 		for (VertexArray bezierCurves : interpolatedPoints){ window.draw(bezierCurves); }
-		for (ControlPoint cp : arrayOfControlPoints){ cp.drawCircle(); }
+		for (ControlPoint cp : arrayOfControlPoints){ 
+			cp.drawCircle(); 
+			cp.drawText();
+		}
 		window.display();
 	}
 }
