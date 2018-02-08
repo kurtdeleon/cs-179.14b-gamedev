@@ -46,21 +46,30 @@ vector<ControlPoint> arrayOfControlPoints;
 vector<VertexArray> curves;
 vector<vector<float>> pascalData;
 
+//made this to replace factorial overflow :-----)
+vector<int> pascalBoye(int order){
+	vector<int> pascalVec;
+	pascalVec.push_back(1);
+	for (int i = 0; i < order; i++){
+		pascalVec.push_back(pascalVec.back()*(float)((float)(order-i)/(float)(i+1)));
+	}
+	cout << pascalVec.size() << endl;
+	return pascalVec;
+}
+
 //build data for computations
 //only builds data for step 1 to step n-1
 //assumes first/last step are just the first/last points
-int factorial(int num){ if (num == 0) return 1; return num * factorial(num - 1); }
-int combination(int n, int r){ return (factorial(n) / (factorial(r) * factorial(n-r))); }
 void buildData(){
+	vector<int> pb = pascalBoye(orderOfCurve);
+	cout << pb[0] << " " << pb[1] << " " << pb[2] << " " << pb[3] << endl;
 	for (int i = 1; i < steps; i++){
 		vector<float> tempVec;
 		for (int j = 0; j <= orderOfCurve; j++){
-			tempVec.push_back(
-				combination(orderOfCurve, j) * 
+			tempVec.push_back(pb[j] * 
 				pow(1-(percentageSteps*i), orderOfCurve-j) * 
-				pow((percentageSteps*i), j)
-				);
-		}
+				pow((percentageSteps*i), j));
+		};
 		pascalData.push_back(tempVec);
 	}
 }
