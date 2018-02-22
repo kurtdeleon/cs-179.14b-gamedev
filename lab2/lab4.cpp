@@ -30,6 +30,7 @@ using namespace sf;
 
 RenderWindow window;
 Font font;
+int soundcounter= 0;
 
 
 void helpme(){
@@ -66,7 +67,7 @@ int main(int argc, char *argv[]){
 	cout << "loading music..." << endl << "loading sounds..." << endl;
 	
 	Music music;
-	Sound sound[64];
+	Sound sound[32];
 	SoundBuffer buffer;
 
 	//initializes music
@@ -84,7 +85,7 @@ int main(int argc, char *argv[]){
 	}
 	else cout << "Sound succesfully loaded!" <<endl;
 	//initializes sound
-	for(int i = 0; i <63; i++)
+	for(int i = 0; i <31; i++)
     {sound[i].setBuffer(buffer);}
 
 	music.setLoop(true);
@@ -97,7 +98,7 @@ int main(int argc, char *argv[]){
 		while (window.pollEvent(event)){
             if (event.type == sf::Event::Closed){ 
             	music.stop();
-            	for(int i = 0; i <63; i++)
+            	for(int i = 0; i <31; i++)
             			{
             	sound[i].stop();
             		}
@@ -106,97 +107,98 @@ int main(int argc, char *argv[]){
             	{
             		if (event.key.code == keyClose){
             		music.stop();
-            		for(int i = 0; i <63; i++)
+            		for(int i = 0; i <31; i++)
             			{
             		sound[i].stop();
             			}
+            			cout << "Goodbye!" << endl;
             		window.close();
             		}
             		if (event.key.code == keyMPlay){
             			if(music.getStatus()== sf::SoundSource::Playing ){
 							music.pause();
+							cout << "Music has been paused" << endl;
 						}
-						else
+						else{
 						music.play();
+						cout << "Music is playing!" << endl;
+						}
 					}
                 	if (event.key.code == keyHelp){helpme();}
                 	if (event.key.code == keyMRestart){
                 		music.stop();
 						music.play();
+						cout << "Music has been restarted!" << endl;
 					}
                	 	if (event.key.code == keyMUpPitch){
                	 		music.setPitch(music.getPitch()+0.1);
-						cout << "Music pitch is " << music.getPitch() << endl;
+						cout << "Music pitch is now " << music.getPitch() << endl;
 					}
                 	if (event.key.code == keyMDownPitch){
                 		if(music.getPitch() < 0.2){
                 			music.setPitch(0.1f);
                 		}
                 		else music.setPitch(music.getPitch()-0.1);
-						cout << "Music pitch is " << music.getPitch() << endl;
+						cout << "Music pitch is now " << music.getPitch() << endl;
 					}
                 	if (event.key.code == keyMUpVol){
 						if(music.getVolume()>95.0 || music.getVolume()==95.0 ){
 						music.setVolume(100.0);}
 						else music.setVolume(music.getVolume()+2.5);
-						cout << "Music volume is " << music.getVolume() << endl;
+						cout << "Music volume is now " << music.getVolume() << endl;
 					}
             		if (event.key.code == keyMDownVol){
 						if(music.getVolume()<2.5 || music.getVolume()==2.5 ){
 						music.setVolume(0);}
 						else music.setVolume(music.getVolume()-2.5);
-						cout << "Music volume is " << music.getVolume() << endl;
+						cout << "Music volume is now " << music.getVolume() << endl;
 					}
             		if (event.key.code == keySPlay){
-            			for(int i = 0; i <63; i++)
-            			{
-            				if(sound[i].getStatus()!= sf::SoundSource::Playing){
-            					sound[i].play();
-            					cout << "Sound[" << i << "] is playing" << endl;
-            					break;
-            				}
-            				
-
-            				//else if(sound[5].getStatus() == sf::SoundSource::Playing){
-            				//	i = 0;
-            				//}
+            			if(soundcounter == 31){
+            				sound[soundcounter].play();		
+            				cout << "Sound[" << soundcounter <<"] is playing" << endl;
+            				soundcounter = 0;
             			}
-						
+            			else{sound[soundcounter].play();
+            			cout << "Sound[" << soundcounter <<"] is playing" << endl;
+            			soundcounter++;
+            			}
+            			
 					}
             		if (event.key.code == keySUpPitch){
-            			for(int i = 0; i <63; i++)
+            			for(int i = 0; i <31; i++)
             			{
             			sound[i].setPitch(sound[i].getPitch()+0.1);
 						}
-						cout << "Sound pitch is " << sound[0].getPitch() << endl;
+						cout << "Sound pitch is now " << sound[0].getPitch() << endl;
 					}
             		if (event.key.code == keySDownPitch){
-            			for(int i = 0; i <63; i++)
+            			for(int i = 0; i <31; i++)
             			{
             			if(sound[i].getPitch()<0.2){
                 			sound[i].setPitch(0.1);
                 		}
             			else sound[i].setPitch(sound[i].getPitch()-0.1);
             		}
-						cout << "Sound pitch is " << sound[0].getPitch() << endl;
+						cout << "Sound pitch is now " << sound[0].getPitch() << endl;
 					}
             		if (event.key.code == keySUpVol){
-            			for(int i = 0; i <63; i++)
+            			for(int i = 0; i <31; i++)
             			{
 						if(sound[i].getVolume()>95.0 || sound[i].getVolume()==95.0){
 						sound[i].setVolume(100.0);}
 						else sound[i].setVolume(sound[i].getVolume()+2.5);
 						}
-						cout << "Sound volume is " << sound[0].getVolume() << endl;
+						cout << "Sound volume is now " << sound[0].getVolume() << endl;
 					}
             		if (event.key.code == keySDownVol){
-            			for(int i = 0; i <63; i++)
-            			{
-						if(sound[i].getVolume()<2.5 || sound[i].getVolume() ==2.5 ){
+            			for(int i = 0; i <31; i++)
+            			
+{						if(sound[i].getVolume()<2.5 || sound[i].getVolume() ==2.5 ){
 						sound[i].setVolume(0);}
 						else sound[i].setVolume(sound[i].getVolume()-2.5);
 					}
-						cout << "Sound volume is " << sound[0].getVolume() << endl;
+						cout << "Sound volume is now " << sound[0].getVolume() << endl;
 					}
             	}
         }
