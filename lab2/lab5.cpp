@@ -7,48 +7,36 @@
 using namespace std;
 using namespace sf;
 
-//Music Keys
-#define keyMPlay Keyboard::Space
-#define keyMRestart Keyboard::LShift
-#define keyMUpPitch Keyboard::W
-#define keyMDownPitch Keyboard::S
-#define keyMUpVol Keyboard::D
-#define keyMDownVol Keyboard::A
-
-//Help Key
+//Keys
+#define keyPlay Keyboard::Space
+#define keyLUp Keyboard::W
+#define keyLDown Keyboard::S
+#define keyLLeft Keyboard::D
+#define keyLRight Keyboard::A
 #define keyHelp Keyboard::H
-
-//Sound Keys
-#define keySPlay Keyboard::C
-#define keySUpPitch Keyboard::E
-#define keySDownPitch Keyboard::Q
-#define keySUpVol Keyboard::R
-#define keySDownVol Keyboard::F
+#define keySUp Keyboard::C
+#define keySDown Keyboard::E
+#define keySLeft Keyboard::Q
+#define keySRight Keyboard::R
 
 #define keyClose Keyboard::Escape
 
-
+CircleShape listener, source;
 RenderWindow window;
 Font font;
-int soundcounter= 0;
 
 
 void helpme(){
 	cout << endl << endl << "Command List" << endl << "-------------------" << endl;
-	cout << "MUSIC COMMANDS" << endl;
 	cout << "Play/Pause: Space" << endl;
-	cout << "Restart: Shift" << endl;
-	cout << "Increase Pitch: W" << endl;
-	cout << "Decrease Pitch: S" << endl;
-	cout << "Increase Volume: D" << endl;
-	cout << "Decrease Volume: A" << endl << endl;
-	cout << "-------------------" << endl << endl;
-	cout << "SOUND COMMANDS" << endl;
-	cout << "Play/Pause: C" << endl;
-	cout << "Increase Pitch: E" << endl;
-	cout << "Decrease Pitch: Q" << endl;
-	cout << "Increase Volume: R" << endl;
-	cout << "Decrease Volume: F" << endl << endl;
+	cout << "Listener Move Up: W" << endl;
+	cout << "Listener Move Down: S" << endl;
+	cout << "Listener Move Right: D" << endl;
+	cout << "Listener Move Left: A" << endl << endl;
+	cout << "Source Move Up: " << endl;
+	cout << "Source Move Down: " << endl;
+	cout << "Source Move Left: E" << endl;
+	cout << "Source Move Right: Q" << endl << endl;
 	cout << "Command List: H" << endl;
 	cout << "Exit: Escape" << endl << "-------------------" << endl << endl;
 
@@ -66,29 +54,33 @@ int main(int argc, char *argv[]){
 
 	cout << "loading music..." << endl << "loading sounds..." << endl;
 	
-	Music music;
-	Sound sound[32];
+
+	Sound sound;
 	SoundBuffer buffer;
 
-	//initializes music
-	if( !music.openFromFile(argv[1])){
-		//failed to load music file :(
-		cout << "ERROR: MUSIC HAS FAILED TO LOAD" << endl;
-	}
-	else cout<< "Music successfully loaded!" << endl;
+	listener.setRadius(20);
+	listener.setOrigin(20, 20);
+	listener.setFillColor(Color::Magenta);
+	listener.setPosition(800/2, 600/2);
+
+	source.setRadius(20);
+	source.setOrigin(20, 20);
+	source.setFillColor(Color::Blue);
+	source.setPosition(400, 500);
+
 
 	//initializes sound buffer
 	
-	if(!buffer.loadFromFile(argv[2])){
+	if(!buffer.loadFromFile(argv[1])){
 		//failed to load sound file :(
 		cout << "ERROR: SOUND HAS FAILED TO LOAD" << endl;
 	}
 	else cout << "Sound succesfully loaded!" <<endl;
 	//initializes sound
-	for(int i = 0; i <31; i++)
-    {sound[i].setBuffer(buffer);}
+	
+    sound.setBuffer(buffer);
 
-	music.setLoop(true);
+	sound.setLoop(true);
 
 	helpme();
 
@@ -97,23 +89,16 @@ int main(int argc, char *argv[]){
 		Event event;
 		while (window.pollEvent(event)){
             if (event.type == sf::Event::Closed){ 
-            	music.stop();
-            	for(int i = 0; i <31; i++)
-            			{
-            	sound[i].stop();
-            		}
+               	sound.stop();	
             	window.close();}
         	if (event.type == sf::Event::KeyPressed)
             	{
             		if (event.key.code == keyClose){
-            		music.stop();
-            		for(int i = 0; i <31; i++)
-            			{
-            		sound[i].stop();
-            			}
+            		sound.stop();	
             			cout << "Goodbye!" << endl;
             		window.close();
             		}
+            		/*
             		if (event.key.code == keyMPlay){
             			if(music.getStatus()== sf::SoundSource::Playing ){
 							music.pause();
@@ -199,12 +184,13 @@ int main(int argc, char *argv[]){
 						else sound[i].setVolume(sound[i].getVolume()-2.5f);
 					}
 						cout << "Sound volume is now " << sound[0].getVolume() << endl;
-					}
+					}*/
             	}
         }
 
 		window.clear(Color::Black);
-
+		window.draw(listener);
+		window.draw(source);
 		window.display();
 	}
 	return 0;
