@@ -1,197 +1,148 @@
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-#include <iostream>
-#include <vector>
 
+#define FPS 60
+#define C_RADIUS 20
+#define WINDOW_H 600
+#define WINDOW_W 800
+#define SPEED 500.0f / FPS
+#define MIN_DIST C_RADIUS * 4.0f
+#define ATN 5.0f
 
 using namespace std;
 using namespace sf;
 
-//Keys
-#define keyPlay Keyboard::Space
-#define keyLUp Keyboard::W
-#define keyLDown Keyboard::S
-#define keyLLeft Keyboard::D
-#define keyLRight Keyboard::A
-#define keyHelp Keyboard::H
-#define keySUp Keyboard::C
-#define keySDown Keyboard::E
-#define keySLeft Keyboard::Q
-#define keySRight Keyboard::R
-
-#define keyClose Keyboard::Escape
-
-CircleShape listener, source;
 RenderWindow window;
-Font font;
+SoundBuffer buffer;
+Sound sound;
 
-
-void helpme(){
-	cout << endl << endl << "Command List" << endl << "-------------------" << endl;
-	cout << "Play/Pause: Space" << endl;
-	cout << "Listener Move Up: W" << endl;
-	cout << "Listener Move Down: S" << endl;
-	cout << "Listener Move Right: D" << endl;
-	cout << "Listener Move Left: A" << endl << endl;
-	cout << "Source Move Up: " << endl;
-	cout << "Source Move Down: " << endl;
-	cout << "Source Move Left: E" << endl;
-	cout << "Source Move Right: Q" << endl << endl;
-	cout << "Command List: H" << endl;
-	cout << "Exit: Escape" << endl << "-------------------" << endl << endl;
-
+void printCommands() {
+	cout << "Available Commands:" << endl;
+	cout << "W / A / S / D - Move source" << endl;
+	cout << "I / J / K / L - Move listener" << endl;
+	cout << "SPACE - Pause/Play sound" << endl;
+	cout << "R - Print available commands" << endl << endl;
 }
 
+void initialize( string soundTitle, CircleShape* listener, CircleShape* source )
+{
+	if (!buffer.loadFromFile( soundTitle ) )
+	{
+		cout << "'" << soundTitle << "' not found." << endl;
+		window.close();
+	}
+	else
+	{
+		cout << "Sound successfully loaded." << endl << endl;
+		
+		listener->setRadius(C_RADIUS);
+		listener->setOrigin(C_RADIUS, C_RADIUS);
+		listener->setPosition(400, 400);
+		listener->setFillColor(Color::Blue);
+		
+		source->setRadius(C_RADIUS);
+		source->setOrigin(C_RADIUS, C_RADIUS);
+		source->setPosition(400, 150);
+		source->setFillColor(Color::Yellow);
+		
+		sound.setBuffer(buffer);
+		sound.setLoop(true);
+		sound.setMinDistance(MIN_DIST);
+		sound.setAttenuation(ATN);
+		sound.play();
 
-int main(int argc, char *argv[]){
+		printCommands();
+	}
+}
+
+void checkBorderCollision( CircleShape* c )
+{
+	float posX = c->getPosition().x;
+	float posY = c->getPosition().y;
+	if (posY - C_RADIUS < 0) 				c->setPosition(posX, C_RADIUS);
+	else if (posY + C_RADIUS > WINDOW_H) 	c->setPosition(posX, WINDOW_H - C_RADIUS);
+	if (posX - C_RADIUS < 0)				c->setPosition(C_RADIUS, posY);
+	else if (posX + C_RADIUS > WINDOW_W)	c->setPosition(WINDOW_W - C_RADIUS, posY);
+}
+
+void updateValues( CircleShape* listener, CircleShape* source )
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) listener->move(0, -SPEED);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) listener->move(-SPEED, 0);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) listener->move(0, SPEED);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) listener->move(SPEED, 0);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)) source->move(0, -SPEED);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::J)) source->move(-SPEED, 0);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K)) source->move(0, SPEED);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)) source->move(SPEED, 0);
+
+	checkBorderCollision(listener);
+	checkBorderCollision(source);
+
+	sound.setPosition(source->getPosition().x, source->getPosition().y, 0 );
+	Listener::setPosition(listener->getPosition().x, listener->getPosition().y, 0);
+}
+
+int main( int argc, char** argv )
+{
 	//window stuff
 	ContextSettings settings;
 	settings.antialiasingLevel = 8;
-	window.create(VideoMode(800, 600), "musix", Style::Default, settings);
-	window.setFramerateLimit(60);
+	window.create(VideoMode(WINDOW_W, WINDOW_H), "Audio Spatialization", Style::Default, settings);
+	window.setFramerateLimit(FPS);
 	window.setActive(true);
-	window.setKeyRepeatEnabled(false);
+	window.setKeyRepeatEnabled(true);
 
-	cout << "loading music..." << endl << "loading sounds..." << endl;
+	//initialize objects
+	CircleShape* listener = new CircleShape();
+	CircleShape* source = new CircleShape();
+	initialize(argv[1], listener, source);
 	
+	while(window.isOpen())
+	{
+		updateValues(listener, source);
 
-	Sound sound;
-	SoundBuffer buffer;
-
-	listener.setRadius(20);
-	listener.setOrigin(20, 20);
-	listener.setFillColor(Color::Magenta);
-	listener.setPosition(800/2, 600/2);
-
-	source.setRadius(20);
-	source.setOrigin(20, 20);
-	source.setFillColor(Color::Blue);
-	source.setPosition(400, 500);
-
-
-	//initializes sound buffer
-	
-	if(!buffer.loadFromFile(argv[1])){
-		//failed to load sound file :(
-		cout << "ERROR: SOUND HAS FAILED TO LOAD" << endl;
-	}
-	else cout << "Sound succesfully loaded!" <<endl;
-	//initializes sound
-	
-    sound.setBuffer(buffer);
-
-	sound.setLoop(true);
-
-	helpme();
-
-	while(window.isOpen()){
 		//check if window is closed
 		Event event;
-		while (window.pollEvent(event)){
-            if (event.type == sf::Event::Closed){ 
-               	sound.stop();	
-            	window.close();}
-        	if (event.type == sf::Event::KeyPressed)
-            	{
-            		if (event.key.code == keyClose){
-            		sound.stop();	
-            			cout << "Goodbye!" << endl;
-            		window.close();
-            		}
-            		/*
-            		if (event.key.code == keyMPlay){
-            			if(music.getStatus()== sf::SoundSource::Playing ){
-							music.pause();
-							cout << "Music has been paused" << endl;
-						}
-						else{
-						music.play();
-						cout << "Music is playing!" << endl;
-						}
-					}
-                	if (event.key.code == keyHelp){helpme();}
-                	if (event.key.code == keyMRestart){
-                		music.stop();
-						music.play();
-						cout << "Music has been restarted!" << endl;
-					}
-               	 	if (event.key.code == keyMUpPitch){
-               	 		music.setPitch(music.getPitch()+0.1);
-						cout << "Music pitch is now " << music.getPitch() << endl;
-					}
-                	if (event.key.code == keyMDownPitch){
-                		if(music.getPitch() < 0.2){
-                			music.setPitch(0.1f);
-                		}
-                		else music.setPitch(music.getPitch()-0.1);
-						cout << "Music pitch is now " << music.getPitch() << endl;
-					}
-                	if (event.key.code == keyMUpVol){
-						if(music.getVolume()>95.f || music.getVolume()==95.f ){
-						music.setVolume(100.f);}
-						else music.setVolume(music.getVolume()+2.5f);
-						cout << "Music volume is now " << music.getVolume() << endl;
-					}
-            		if (event.key.code == keyMDownVol){
-						if(music.getVolume()<2.5f || music.getVolume()==2.5f ){
-						music.setVolume(0);}
-						else music.setVolume(music.getVolume()-2.5f);
-						cout << "Music volume is now " << music.getVolume() << endl;
-					}
-            		if (event.key.code == keySPlay){
-            			if(soundcounter == 31){
-            				sound[soundcounter].play();		
-            				cout << "Sound[" << soundcounter <<"] is playing" << endl;
-            				soundcounter = 0;
-            			}
-            			else{sound[soundcounter].play();
-            			cout << "Sound[" << soundcounter <<"] is playing" << endl;
-            			soundcounter++;
-            			}
-            			
-					}
-            		if (event.key.code == keySUpPitch){
-            			for(int i = 0; i <31; i++)
-            			{
-            			sound[i].setPitch(sound[i].getPitch()+0.1);
-						}
-						cout << "Sound pitch is now " << sound[0].getPitch() << endl;
-					}
-            		if (event.key.code == keySDownPitch){
-            			for(int i = 0; i <31; i++)
-            			{
-            			if(sound[i].getPitch()<0.2){
-                			sound[i].setPitch(0.1);
-                		}
-            			else sound[i].setPitch(sound[i].getPitch()-0.1);
-            		}
-						cout << "Sound pitch is now " << sound[0].getPitch() << endl;
-					}
-            		if (event.key.code == keySUpVol){
-            			for(int i = 0; i <31; i++)
-            			{
-						if(sound[i].getVolume()>95.f || sound[i].getVolume()==95.f){
-						sound[i].setVolume(100.f);}
-						else sound[i].setVolume(sound[i].getVolume()+2.5f);
-						}
-						cout << "Sound volume is now " << sound[0].getVolume() << endl;
-					}
-            		if (event.key.code == keySDownVol){
-            			for(int i = 0; i <31; i++)
-            			
-{						if(sound[i].getVolume()<2.5f || sound[i].getVolume() ==2.5f ){
-						sound[i].setVolume(0);}
-						else sound[i].setVolume(sound[i].getVolume()-2.5f);
-					}
-						cout << "Sound volume is now " << sound[0].getVolume() << endl;
-					}*/
-            	}
-        }
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+			{ 
+				sound.stop();
+				window.close();
+			}
 
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == Keyboard::Escape)
+				{
+					sound.stop();
+					window.close();
+				}
+				else if (event.key.code == Keyboard::Space)
+				{
+					if(sound.getStatus() == sf::SoundSource::Playing) 
+					{
+						sound.pause();
+						cout << "Sound paused." << endl;
+					}
+					else 
+					{
+						sound.play();
+						cout << "Sound resumed." << endl;
+					}
+				}
+				else if (event.key.code == Keyboard::R)
+				{
+					printCommands();
+				}
+			}
+		}
+		//draw the vids and display
 		window.clear(Color::Black);
-		window.draw(listener);
-		window.draw(source);
+		window.draw(*listener);
+		window.draw(*source);
 		window.display();
 	}
-	return 0;
 }
