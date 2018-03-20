@@ -13,10 +13,10 @@ extern const sf::Color COLOR_PLAYER(255, 240, 255);
 extern const sf::Color COLOR_WALL(50, 50, 50);
 
 #define H_ACCEL 10.f/FPS 					//per second
-#define H_COEFF 0.3
-#define H_OPPOSITE 2.0
-#define H_AIR 1.0
-#define MIN_H_VEL 0.01						//per frame
+#define H_COEFF 0.3f
+#define H_OPPOSITE 2.0f
+#define H_AIR 1.0f
+#define MIN_H_VEL 0.01f						//per frame
 #define MAX_H_VEL 200.f/FPS 				//per second
 
 #define GRAVITY 20.f/FPS					//per second
@@ -26,6 +26,6 @@ extern const sf::Color COLOR_WALL(50, 50, 50);
 #define CUT_V_VEL -20.f/FPS					//per second
 #define MAX_V_VEL 400.f/FPS					//per second
 
-#define GAP 0.1
+#define GAP 0.1f
 
 #endif

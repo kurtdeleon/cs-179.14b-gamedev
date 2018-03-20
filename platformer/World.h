@@ -13,9 +13,6 @@ private:
 	sf::RenderWindow *window; 
 	InputHandler *inputHandler;
 	
-
-
-
 	void Initialize()
 	{
 
@@ -35,11 +32,8 @@ public:
 	
 	void UpdateWorld ()
 	{
-		//update functions here
-		//player->Update();
+		player->UpdatePlayer();
 		//handleCollision();
-		player->Update();
-		
 	}
 
 	void DrawWorld ()

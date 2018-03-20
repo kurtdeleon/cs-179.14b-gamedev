@@ -1,9 +1,10 @@
 #ifndef PLAYER 
 #define PLAYER
 
+#include <cmath>
+
 #include "Properties.h"
 #include "InputHandler.h"
-
 
 class Player
 {
@@ -11,97 +12,144 @@ private:
 	sf::RectangleShape player;
 	sf::RenderWindow *window;
 	InputHandler *inputHandler;
-	sf::Vector2f velocity,position;
-	bool isJumping;
-	bool isGrounded;
+	sf::Vector2f velocity, acceleration;
+
+	bool isGrounded, isHoldingJump, canStillJump;
+	int FC_isHoldingJump, FC_canStillJump;
+
+	void Apply_Gravity() 
+	{
+		acceleration.y += GRAVITY;
+	}
+
+	void ApplyAirAccelerationMultiplier()
+	{
+		acceleration.x *= H_AIR;
+	}
+
+	void ApplyVelocityCoeff()
+	{
+		/* Clamps max horizontal velocity. */ 
+		/* Clamps max horizontal velocity. */ 
+		/* Clamps max horizontal velocity. */ 
+		/* Clamps max horizontal velocity. */ 
+		/* Clamps max horizontal velocity. */ 
+		/* Clamps max horizontal velocity. */ 
+		/* THIS DOESN'T FUCKING WORK DUDE */ 
+		/* I TRIED EVERYTHING */ 
+
+		velocity.x *= H_COEFF;
+
+
+		printf("%f\n", velocity.x);
+	}
+
+	void ResetValues()
+	{
+		acceleration.x = 0;
+		acceleration.y = 0;
+	}
+
+	void ClampHorizontalVelocity()
+	{
+		/* Clamps max horizontal velocity. */ 
+		if ( velocity.x > MAX_H_VEL ) velocity.x = MAX_H_VEL;
+		if ( velocity.x < -MAX_H_VEL ) velocity.x = -MAX_H_VEL;
+
+		/* Clamps min horizontal velocity. */
+		if ( std::abs( velocity.x ) <= MIN_H_VEL) velocity.x = 0;
+	}
+
+	void ClampVerticalVelocity()
+	{
+		/* Clamps vertical velocity. */
+		if ( velocity.y > MAX_V_VEL ) velocity.y = MAX_V_VEL;
+	}
 
 	void Jump ()
 	{
-		//check is Jump botton Pressed
-		if(inputHandler->jumpPressed ){
-			//if colliding downwards
-			
-			//isJumping = true;
-			//isGrounded = false;
-			position = player.getPosition();
-
-			if(/*isJumping &&inputHandler->jumpPressed==false && */velocity.y < CUT_V_VEL + V_ACCEL){
-				velocity.y = CUT_V_VEL;
-				std::cout << "CUT!" << std::endl;
-			}
-
-			else velocity.y += V_ACCEL;
-		}
-		//maximum downwards velocity
-		/*
-		if (velocity.y > MAX_V_VEL)
+		if ( isHoldingJump )
 		{
-			velocity.y = MAX_V_VEL;
+			velocity.y = 0;
+			acceleration.y = V_ACCEL;
+
+			FC_isHoldingJump++;
 		}
-
-		//apply gravity
-		velocity.y += GRAVITY;
-		*/
-
-		//update and set position
-		position.y += velocity.y;
-		player.setPosition(position);
-		std::cout << velocity.y << std::endl;
 	}
 
-	void Move ()
+	void UpdateVerticalVelocity()
 	{
-		position = player.getPosition();
-		//check if pressing Move Left button
-		if(inputHandler->isMovingLeft)
-		{	
-			//moving right to left
-			if ( velocity.x > 0){
-				if(isGrounded)velocity.x += -(H_ACCEL + H_ACCEL * H_OPPOSITE);
-				else velocity.x += -(H_ACCEL + H_ACCEL * H_OPPOSITE) * H_AIR;
-			}
-			//max speed left
-			if (velocity.x < -(MAX_H_VEL) + H_ACCEL )velocity.x = -(MAX_H_VEL);
-			//normal left movement
-			else
+		/* Apply vertical acceleration to velocity. */
+		velocity.y += acceleration.y;
+		ClampVerticalVelocity();
+	}
+	/* Apply called when player is moving to the Left. */
+	void MoveLeft()
+	{
+		/* Checks if player is moving to the right. */
+		/* If yes, then addition acceleration is multiplied. */
+		if ( velocity.x > 0 )
+		{
+			acceleration.x -= (H_ACCEL * H_OPPOSITE);
+		}
+		else
+		{
+			acceleration.x -= H_ACCEL;
+		}
+	}
+
+	/* Apply called when player is moving to the right. */
+	void MoveRight()
+	{
+		/* Checks if player is moving to the left. */
+		/* If yes, then addition acceleration is multiplied. */
+		if ( velocity.x < 0 )
+		{
+			acceleration.x += (H_ACCEL * H_OPPOSITE);
+		}
+		else
+		{
+			acceleration.x += H_ACCEL;
+		}
+	}
+
+	void UpdateHorizontalVelocity()
+	{
+		if ( !inputHandler->isMovingLeft && !inputHandler->isMovingRight )
+		{
+			ApplyVelocityCoeff();
+		}
+		else /* This means the character MUST be moving. */
+		{
+
+			if ( inputHandler->isMovingRight )
 			{
-				if(isGrounded)velocity.x += -(H_ACCEL);
-				else velocity.x += -(H_ACCEL) * H_AIR;
+				MoveRight();
+			}
+			else if ( inputHandler->isMovingLeft )
+			{
+				MoveLeft();
+			}
+
+			if ( !isGrounded )
+			{
+				ApplyAirAccelerationMultiplier();
 			}
 		}
-		//check if pressing Move Right button
-		if(inputHandler->isMovingRight)
-		{
-			//moving left to right
-			if ( velocity.x < 0){
-				if(isGrounded)velocity.x += (H_ACCEL + H_ACCEL * H_OPPOSITE);
-				else velocity.x += (H_ACCEL + H_ACCEL * H_OPPOSITE) * H_AIR;
-			}
-			//max speed right
-			if (velocity.x > MAX_H_VEL - H_ACCEL) velocity.x = MAX_H_VEL;
-			//normal right movement
-			else
-			{
-				if(isGrounded)velocity.x += (H_ACCEL);
-				else velocity.x += (H_ACCEL) * H_AIR;
-			}
-		}
-		//Move Left and Move Right key release
-		if(inputHandler->isMovingLeft == false && 
-		   inputHandler->isMovingRight==false)
-		{
-			if(velocity.x > -(MIN_H_VEL) &&
-			   velocity.x <   MIN_H_VEL )
-			     velocity.x = 0;
-			else velocity.x = velocity.x * H_COEFF;
-		}	
 
-		//Update and Set Position
-		position.x += velocity.x;
-		player.setPosition(position);
-		
+		velocity.x += acceleration.x;
+		ClampHorizontalVelocity();
+	}
 
-		std::cout << velocity.x << std::endl;
+	void UpdatePosition()
+	{
+		/* Apply velocity to position. */
+		player.setPosition( player.getPosition() + velocity );
+	}
+
+	void UpdateFrameCounter()
+	{
+
 	}
 
 public:
@@ -115,14 +163,17 @@ public:
 		inputHandler = i;
 	}
 	
-	void Update ()
+	void UpdatePlayer ()
 	{
-		//if input handler has x boolean do y
-		//ex move -> move here
-		Move();
-		Jump();
-		
-		
+		if ( inputHandler->jumpPressed && !isGrounded )
+		{
+			Jump();
+		}
+
+		UpdateHorizontalVelocity();
+
+		UpdatePosition();
+		//ResetValues();
 	}
 
 	void Draw ()
