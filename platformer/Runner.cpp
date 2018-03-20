@@ -50,6 +50,7 @@ int main ( int argc, char** argv )
 	settings.antialiasingLevel = 8;
 	sf::RenderWindow window(sf::VideoMode(WINDOW_W, WINDOW_H), "Platformer", sf::Style::Default, settings);
 	window.setFramerateLimit(FPS);
+	//window.setKeyRepeatEnabled(false);
 	window.setKeyRepeatEnabled(true); //weird... hahaha it can work even if it's false
 	window.setActive(true);
 

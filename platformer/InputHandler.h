@@ -3,17 +3,17 @@
 
 struct InputHandler
 {
-	bool isMovingLeft, isMovingRight, isJumping;
+	bool isMovingLeft, isMovingRight, jumpPressed;
 
 	void UpdateInputStatus()
 	{
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) isJumping = true;
-		else isJumping = false;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) jumpPressed = true;
+		else jumpPressed = false;
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) isMovingLeft = true;
 		else isMovingLeft = false;
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) isMovingRight = true;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) isMovingRight = true;
 		else isMovingRight = false;
 	}
 };
