@@ -12,12 +12,18 @@ private:
 	std::vector<sf::RectangleShape*> *walls;
 	sf::RenderWindow *window; 
 	InputHandler *inputHandler;
+	
+
+
 
 	void Initialize()
 	{
 
 	}
 
+	void handleCollision(){
+	//handle collision function?
+	}
 public:
 	World( sf::RenderWindow *w, InputHandler *i, LevelData *ld )
 	{
@@ -30,7 +36,9 @@ public:
 	void UpdateWorld ()
 	{
 		//update functions here
-
+		//player->Update();
+		//handleCollision();
+		player->Update();
 		
 	}
 
