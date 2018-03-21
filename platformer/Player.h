@@ -14,7 +14,7 @@ private:
 	InputHandler *inputHandler;
 	sf::Vector2f velocity, acceleration;
 
-	bool isGrounded, canStillJump, isSafeToJump, hasCut;
+	bool isGrounded, canStillJump, isSafeToJump, hasCut, hasJumped;
 	int FC_isHoldingJump, FC_isSafeToJump;
 
 	//////////////////////////////////////////////
@@ -110,13 +110,14 @@ private:
 			if ( FC_isHoldingJump > V_HOLD )
 			{
 				canStillJump = false;
+				hasJumped = true;
 			}
 			else 
 			{
 				canStillJump = true;
 			}
 
-			if ( !isGrounded )
+			if ( !isGrounded && !hasJumped )
 			{
 				FC_isSafeToJump++;
 
@@ -137,6 +138,11 @@ private:
 		}
 		else 
 		{
+			if ( isGrounded )
+			{
+				hasJumped = false;
+			}
+
 			if ( canStillJump && FC_isHoldingJump > 0 )
 			{
 				hasCut = true;
@@ -236,7 +242,7 @@ public:
 		UpdateFrameCounters();
 
 		/* Check if player is jumping. If not, set acceleration to 0. */
-		if ( inputHandler->jumpPressed && canStillJump && isSafeToJump )
+		if ( inputHandler->jumpPressed && canStillJump && isSafeToJump && !hasJumped )
 		{
 			Jump();
 		}
