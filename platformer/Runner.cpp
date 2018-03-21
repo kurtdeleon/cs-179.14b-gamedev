@@ -48,10 +48,9 @@ int main ( int argc, char** argv )
 	/* Initalizes the window. */
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
-	sf::RenderWindow window(sf::VideoMode(WINDOW_W, WINDOW_H), "Platformer", sf::Style::Default, settings);
-	window.setFramerateLimit(FPS);
-	//window.setKeyRepeatEnabled(false);
-	window.setKeyRepeatEnabled(true); //weird... hahaha it can work even if it's false
+	sf::RenderWindow window(sf::VideoMode(WINDOW_W, WINDOW_H), "I WANT TO DIE", sf::Style::Default, settings);
+	window.setFramerateLimit(60.0f);
+	window.setKeyRepeatEnabled(true);
 	window.setActive(true);
 
 	/* Creates an InputHandler object. */

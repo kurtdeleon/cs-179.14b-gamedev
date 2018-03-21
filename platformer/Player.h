@@ -14,75 +14,38 @@ private:
 	InputHandler *inputHandler;
 	sf::Vector2f velocity, acceleration;
 
-	bool isGrounded, isHoldingJump, canStillJump;
-	int FC_isHoldingJump, FC_canStillJump;
+	bool isGrounded, canStillJump, isSafeToJump, hasCut;
+	int FC_isHoldingJump, FC_isSafeToJump;
 
-	void Apply_Gravity() 
-	{
-		acceleration.y += GRAVITY;
-	}
+	//////////////////////////////////////////////
+	//////////////////////////////////////////////
+	/* HORIZONTAL MOVEMENT FUNCTIONS ARE BELOW. */
+	//////////////////////////////////////////////
+	//////////////////////////////////////////////
 
+	/* Applied to acceleration while not grounded (or is in air). */
 	void ApplyAirAccelerationMultiplier()
 	{
 		acceleration.x *= H_AIR;
 	}
 
+	/* Is applied when player is not moving. */
 	void ApplyVelocityCoeff()
 	{
-		/* Clamps max horizontal velocity. */ 
-		/* Clamps max horizontal velocity. */ 
-		/* Clamps max horizontal velocity. */ 
-		/* Clamps max horizontal velocity. */ 
-		/* Clamps max horizontal velocity. */ 
-		/* Clamps max horizontal velocity. */ 
-		/* THIS DOESN'T FUCKING WORK DUDE */ 
-		/* I TRIED EVERYTHING */ 
-
 		velocity.x *= H_COEFF;
-
-
-		printf("%f\n", velocity.x);
 	}
 
-	void ResetValues()
-	{
-		acceleration.x = 0;
-		acceleration.y = 0;
-	}
-
+	/* Clamps horizontal velocity. */
 	void ClampHorizontalVelocity()
 	{
-		/* Clamps max horizontal velocity. */ 
+		/* MAX_VEL */ 
 		if ( velocity.x > MAX_H_VEL ) velocity.x = MAX_H_VEL;
 		if ( velocity.x < -MAX_H_VEL ) velocity.x = -MAX_H_VEL;
 
-		/* Clamps min horizontal velocity. */
+		/* MIN_VEL */
 		if ( std::abs( velocity.x ) <= MIN_H_VEL) velocity.x = 0;
 	}
 
-	void ClampVerticalVelocity()
-	{
-		/* Clamps vertical velocity. */
-		if ( velocity.y > MAX_V_VEL ) velocity.y = MAX_V_VEL;
-	}
-
-	void Jump ()
-	{
-		if ( isHoldingJump )
-		{
-			velocity.y = 0;
-			acceleration.y = V_ACCEL;
-
-			FC_isHoldingJump++;
-		}
-	}
-
-	void UpdateVerticalVelocity()
-	{
-		/* Apply vertical acceleration to velocity. */
-		velocity.y += acceleration.y;
-		ClampVerticalVelocity();
-	}
 	/* Apply called when player is moving to the Left. */
 	void MoveLeft()
 	{
@@ -113,15 +76,140 @@ private:
 		}
 	}
 
-	void UpdateHorizontalVelocity()
+	////////////////////////////////////////////
+	////////////////////////////////////////////
+	/* VERTICAL MOVEMENT FUNCTIONS ARE BELOW. */
+	////////////////////////////////////////////
+	////////////////////////////////////////////
+
+	void ApplyGravity() 
+	{
+		acceleration.y += GRAVITY;
+	}
+
+	/* Clamps vertical velocity. */
+	void ClampVerticalVelocity()
+	{
+		/* Clamp when plpayer is going down. */
+		if ( velocity.y > MAX_V_VEL ) velocity.y = MAX_V_VEL;
+	}
+
+	void Jump ()
+	{
+		velocity.y = 0;
+		acceleration.y += V_ACCEL;
+	}
+
+	void UpdateFrameCounters()
+	{
+		if ( inputHandler->jumpPressed )
+		{
+			FC_isHoldingJump++;
+
+			/* Checks if it is still possible to jump. */
+			if ( FC_isHoldingJump > V_HOLD )
+			{
+				canStillJump = false;
+			}
+			else 
+			{
+				canStillJump = true;
+			}
+
+			if ( !isGrounded )
+			{
+				FC_isSafeToJump++;
+
+				if ( FC_isSafeToJump > V_SAFE )
+				{
+					isSafeToJump = false;
+				}
+				else 
+				{
+					isSafeToJump = true;
+				}
+			}
+			else
+			{
+				FC_isSafeToJump = 0;
+				isSafeToJump = true;
+			}
+		}
+		else 
+		{
+			if ( canStillJump && FC_isHoldingJump > 0 )
+			{
+				hasCut = true;
+			}
+			else 
+			{
+				hasCut = false;
+				FC_isHoldingJump = 0;
+			}
+		}
+	}
+
+public:
+	Player( sf::RenderWindow *w, InputHandler *i, sf::Vector2f *pos )
+	{
+		player.setSize( sf::Vector2f( PLAYER_W, PLAYER_H ) );
+		player.setOrigin( PLAYER_W/2, PLAYER_H/2 );
+		player.setPosition( (*pos) );
+		player.setFillColor( COLOR_PLAYER );
+		window = w;
+		inputHandler = i;
+		canStillJump = false;
+		hasCut = false;
+		isGrounded = false;
+		isSafeToJump = false;
+		FC_isSafeToJump = 0;
+		FC_isHoldingJump = 0;
+	}
+
+	sf::Vector2f GetPosition()
+	{
+		return player.getPosition();
+	}
+
+	sf::FloatRect GetAABB()
+	{
+		return player.getGlobalBounds();
+	}
+
+	sf::Vector2f GetSize()
+	{
+		return player.getSize();
+	}
+
+	sf::Vector2f GetVelocity()
+	{
+		return velocity;
+	}
+
+	void SetVelocity( sf::Vector2f newVelocity )
+	{
+		velocity = newVelocity;
+	}
+
+	void ChangePosition ( float x, float y )
+	{
+		player.setPosition( x, y );
+	}
+
+	void SetGroundedStatus ( bool grounded )
+	{
+		isGrounded = grounded;
+	}
+
+	void UpdateHorizontalMovement()
 	{
 		if ( !inputHandler->isMovingLeft && !inputHandler->isMovingRight )
 		{
+			acceleration.x = 0.f;
 			ApplyVelocityCoeff();
 		}
 		else /* This means the character MUST be moving. */
 		{
-
 			if ( inputHandler->isMovingRight )
 			{
 				MoveRight();
@@ -139,41 +227,40 @@ private:
 
 		velocity.x += acceleration.x;
 		ClampHorizontalVelocity();
+
+		ChangePosition ( player.getPosition().x + velocity.x, player.getPosition().y );
 	}
 
-	void UpdatePosition()
+	void UpdateVerticalMovement()
 	{
-		/* Apply velocity to position. */
-		player.setPosition( player.getPosition() + velocity );
-	}
+		UpdateFrameCounters();
 
-	void UpdateFrameCounter()
-	{
-
-	}
-
-public:
-	Player( sf::RenderWindow *w, InputHandler *i, sf::Vector2f *pos )
-	{
-		player.setSize( sf::Vector2f( PLAYER_W, PLAYER_H ) );
-		player.setOrigin( PLAYER_W/2, PLAYER_H/2 );
-		player.setPosition( (*pos) );
-		player.setFillColor( COLOR_PLAYER );
-		window = w;
-		inputHandler = i;
-	}
-	
-	void UpdatePlayer ()
-	{
-		if ( inputHandler->jumpPressed && !isGrounded )
+		/* Check if player is jumping. If not, set acceleration to 0. */
+		if ( inputHandler->jumpPressed && canStillJump && isSafeToJump )
 		{
 			Jump();
 		}
+		else if ( hasCut )
+		{
+			velocity.y = CUT_V_VEL;
+			FC_isHoldingJump = 0;
+			acceleration.y = 0;
+			hasCut = false;
+		}
+		else
+		{
+			acceleration.y = 0;
+		}
 
-		UpdateHorizontalVelocity();
+		/* Apply gravity to player. */
+		ApplyGravity();
 
-		UpdatePosition();
-		//ResetValues();
+		/* Apply vertical acceleration to velocity. */
+		velocity.y += acceleration.y;
+		ClampVerticalVelocity();
+		
+		/* Change position of player. */
+		ChangePosition ( player.getPosition().x, player.getPosition().y + velocity.y );
 	}
 
 	void Draw ()

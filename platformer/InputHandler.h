@@ -1,6 +1,7 @@
 #ifndef INPUT_HANDLER 
 #define INPUT_HANDLER
 
+/* Contains information about the player's input. */
 struct InputHandler
 {
 	bool isMovingLeft, isMovingRight, jumpPressed;

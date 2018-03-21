@@ -3,7 +3,7 @@
 
 #define WINDOW_W 800
 #define WINDOW_H 600
-#define FPS 60
+#define FPS 60.f
 
 #define PLAYER_H 32
 #define PLAYER_W 24
@@ -23,7 +23,7 @@ extern const sf::Color COLOR_WALL(50, 50, 50);
 #define V_ACCEL -600.f/FPS					//per second
 #define V_HOLD 1
 #define V_SAFE 6
-#define CUT_V_VEL -20.f/FPS					//per second
+#define CUT_V_VEL -20/FPS					//per second
 #define MAX_V_VEL 400.f/FPS					//per second
 
 #define GAP 0.1f
