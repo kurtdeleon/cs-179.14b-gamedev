@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "InputHandler.h"
 #include "LevelData.h"
+#include "Properties.h"
 
 class World
 {
@@ -12,6 +13,7 @@ private:
 	std::vector<sf::RectangleShape*> *walls;
 	sf::RenderWindow *window; 
 	InputHandler *inputHandler;
+	Properties *properties;
 
 	bool IsColliding( sf::FloatRect a, sf::FloatRect b )
 	{
@@ -32,7 +34,7 @@ private:
 				float wallHorizontalPosition = wall->getPosition().x;
 
 				float collisionResponseWidth = player->GetSize().x/2 
-					+ wall->getSize().x/2 + GAP;
+					+ wall->getSize().x/2 + properties->GAP;
 				
 				/* Player is to the LEFT of the wall.*/
 				if ( playerHorizontalPosition < wallHorizontalPosition )
@@ -64,7 +66,7 @@ private:
 				float wallVerticalPosition = wall->getPosition().y;
 
 				float collisionResponseWidth = player->GetSize().y/2 
-					+ wall->getSize().y/2 + GAP;
+					+ wall->getSize().y/2 + properties->GAP;
 
 				if ( playerVerticalPosition < wallVerticalPosition )
 				{
@@ -83,12 +85,13 @@ private:
 	}
 
 public:
-	World( sf::RenderWindow *w, InputHandler *i, LevelData *ld )
+	World( sf::RenderWindow *w, InputHandler *i, LevelData *ld, Properties *p )
 	{
-		player = new Player( w, i, &(ld->playerPosition) );
+		player = new Player( w, i, &(ld->playerPosition),p );
 		walls = &(ld->walls);
 		window = w;
 		inputHandler = i;
+		properties = p;
 	}
 	
 	void UpdateWorld ()

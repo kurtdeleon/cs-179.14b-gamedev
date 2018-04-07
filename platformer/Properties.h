@@ -1,16 +1,11 @@
 #ifndef PROPERTIES
 #define PROPERTIES
 
-#define WINDOW_W 800
-#define WINDOW_H 600
+/*
 #define FPS 60.f
 
 #define PLAYER_H 32
 #define PLAYER_W 24
-
-extern const sf::Color COLOR_BG(40, 40, 40);
-extern const sf::Color COLOR_PLAYER(255, 240, 255);
-extern const sf::Color COLOR_WALL(50, 50, 50);
 
 #define H_ACCEL 10.f/FPS 					//per second
 #define H_COEFF 0.3f
@@ -28,4 +23,21 @@ extern const sf::Color COLOR_WALL(50, 50, 50);
 
 #define GAP 0.1f
 
+extern const sf::Color COLOR_BG(40, 40, 40);
+extern const sf::Color COLOR_PLAYER(255, 240, 255);
+extern const sf::Color COLOR_WALL(50, 50, 50);
+
+#define WINDOW_W 800
+#define WINDOW_H 600
+*/
+
+struct Properties
+{
+	float FPS, PLAYER_H, PLAYER_W;
+	float H_ACCEL, H_COEFF, H_OPPOSITE, H_AIR, MIN_H_VEL, MAX_H_VEL;
+	float GRAVITY, V_ACCEL, V_HOLD, V_SAFE, CUT_V_VEL, MAX_V_VEL, GAP;
+};
+
 #endif
+
+

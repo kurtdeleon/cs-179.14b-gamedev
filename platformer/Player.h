@@ -12,6 +12,7 @@ private:
 	sf::RectangleShape player;
 	sf::RenderWindow *window;
 	InputHandler *inputHandler;
+	Properties *properties;
 	sf::Vector2f velocity, acceleration;
 
 	bool isGrounded, canStillJump, isSafeToJump, hasCut, hasJumped;
@@ -26,24 +27,24 @@ private:
 	/* Applied to acceleration while not grounded (or is in air). */
 	void ApplyAirAccelerationMultiplier()
 	{
-		acceleration.x *= H_AIR;
+		acceleration.x *= properties->H_AIR;
 	}
 
 	/* Is applied when player is not moving. */
 	void ApplyVelocityCoeff()
 	{
-		velocity.x *= H_COEFF;
+		velocity.x *= properties->H_COEFF;
 	}
 
 	/* Clamps horizontal velocity. */
 	void ClampHorizontalVelocity()
 	{
 		/* MAX_VEL */ 
-		if ( velocity.x > MAX_H_VEL ) velocity.x = MAX_H_VEL;
-		if ( velocity.x < -MAX_H_VEL ) velocity.x = -MAX_H_VEL;
+		if ( velocity.x > properties->MAX_H_VEL / properties->FPS ) velocity.x = properties->MAX_H_VEL / properties->FPS;
+		if ( velocity.x < -(properties->MAX_H_VEL / properties->FPS) ) velocity.x = -(properties->MAX_H_VEL / properties->FPS);
 
 		/* MIN_VEL */
-		if ( std::abs( velocity.x ) <= MIN_H_VEL) velocity.x = 0;
+		if ( std::abs( velocity.x ) <= properties->MIN_H_VEL) velocity.x = 0;
 	}
 
 	/* Apply called when player is moving to the Left. */
@@ -53,11 +54,11 @@ private:
 		/* If yes, then addition acceleration is multiplied. */
 		if ( velocity.x > 0 )
 		{
-			acceleration.x -= (H_ACCEL * H_OPPOSITE);
+			acceleration.x -= ((properties->H_ACCEL / properties->FPS) * properties->H_OPPOSITE);
 		}
 		else
 		{
-			acceleration.x -= H_ACCEL;
+			acceleration.x -= properties->H_ACCEL / properties->FPS;
 		}
 	}
 
@@ -68,11 +69,11 @@ private:
 		/* If yes, then addition acceleration is multiplied. */
 		if ( velocity.x < 0 )
 		{
-			acceleration.x += (H_ACCEL * H_OPPOSITE);
+			acceleration.x += ((properties->H_ACCEL / properties->FPS) * properties->H_OPPOSITE);
 		}
 		else
 		{
-			acceleration.x += H_ACCEL;
+			acceleration.x += properties->H_ACCEL / properties->FPS;
 		}
 	}
 
@@ -84,20 +85,20 @@ private:
 
 	void ApplyGravity() 
 	{
-		acceleration.y += GRAVITY;
+		acceleration.y += properties->GRAVITY / properties->FPS;
 	}
 
 	/* Clamps vertical velocity. */
 	void ClampVerticalVelocity()
 	{
 		/* Clamp when plpayer is going down. */
-		if ( velocity.y > MAX_V_VEL ) velocity.y = MAX_V_VEL;
+		if ( velocity.y > properties->MAX_V_VEL / properties->FPS ) velocity.y = properties->MAX_V_VEL / properties->FPS;
 	}
 
 	void Jump ()
 	{
 		velocity.y = 0;
-		acceleration.y += V_ACCEL;
+		acceleration.y += properties->V_ACCEL / properties->FPS;
 	}
 
 	void UpdateFrameCounters()
@@ -107,7 +108,7 @@ private:
 			FC_isHoldingJump++;
 
 			/* Checks if it is still possible to jump. */
-			if ( FC_isHoldingJump > V_HOLD )
+			if ( FC_isHoldingJump > properties->V_HOLD )
 			{
 				canStillJump = false;
 				hasJumped = true;
@@ -121,7 +122,7 @@ private:
 			{
 				FC_isSafeToJump++;
 
-				if ( FC_isSafeToJump > V_SAFE )
+				if ( FC_isSafeToJump > properties->V_SAFE )
 				{
 					isSafeToJump = false;
 				}
@@ -156,14 +157,15 @@ private:
 	}
 
 public:
-	Player( sf::RenderWindow *w, InputHandler *i, sf::Vector2f *pos )
+	Player( sf::RenderWindow *w, InputHandler *i, sf::Vector2f *pos, Properties *p )
 	{
-		player.setSize( sf::Vector2f( PLAYER_W, PLAYER_H ) );
-		player.setOrigin( PLAYER_W/2, PLAYER_H/2 );
+		player.setSize( sf::Vector2f( (p->PLAYER_W), (p->PLAYER_H) ) );
+		player.setOrigin( (p->PLAYER_W)/2, (p->PLAYER_H)/2 );
 		player.setPosition( (*pos) );
-		player.setFillColor( COLOR_PLAYER );
+		player.setFillColor( sf::Color(255, 240, 255));
 		window = w;
 		inputHandler = i;
+		properties = p;
 		canStillJump = false;
 		hasCut = false;
 		isGrounded = false;
@@ -248,7 +250,7 @@ public:
 		}
 		else if ( hasCut )
 		{
-			velocity.y = CUT_V_VEL;
+			velocity.y = properties->CUT_V_VEL / properties->FPS;
 			FC_isHoldingJump = 0;
 			acceleration.y = 0;
 			hasCut = false;

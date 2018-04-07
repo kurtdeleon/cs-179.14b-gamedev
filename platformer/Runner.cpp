@@ -33,7 +33,7 @@ void Initialize( std::string dataFile, LevelData &levelData, sf::RenderWindow &w
 		inFile >> pos.x >> pos.y;
 		inFile >> size.x >> size.y;
 		sf::RectangleShape* rect = new sf::RectangleShape( size );
-		rect->setFillColor( COLOR_WALL );
+		rect->setFillColor( sf::Color(50, 50, 50) );
 		rect->setOrigin( size.x/2, size.y/2 );
 		rect->setPosition( pos );
 
@@ -43,12 +43,42 @@ void Initialize( std::string dataFile, LevelData &levelData, sf::RenderWindow &w
 	inFile.close();
 }
 
+void setProperties(std::string dataFile, Properties &properties, sf::RenderWindow &window){
+	std::ifstream inFile;
+	inFile.open( dataFile );
+
+	if ( !inFile )
+	{
+		printf( "File not found. Program is closing.\n" );
+		inFile.close();
+		window.close();
+	}
+	inFile >> properties.FPS;
+	inFile >> properties.PLAYER_H;
+	inFile >> properties.PLAYER_W ;
+	inFile >> properties.H_ACCEL;
+	inFile >> properties.H_COEFF;
+	inFile >> properties.H_OPPOSITE;
+	inFile >> properties.H_AIR;
+	inFile >> properties.MIN_H_VEL;
+	inFile >> properties.MAX_H_VEL;
+	inFile >> properties.GRAVITY;
+	inFile >> properties.V_ACCEL;
+	inFile >> properties.V_HOLD;
+	inFile >> properties.V_SAFE;
+	inFile >> properties.CUT_V_VEL;
+	inFile >> properties.MAX_V_VEL;
+	inFile >> properties.GAP;
+
+	inFile.close();
+}
+
 int main ( int argc, char** argv )
 {
 	/* Initalizes the window. */
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
-	sf::RenderWindow window(sf::VideoMode(WINDOW_W, WINDOW_H), "I WANT TO DIE", sf::Style::Default, settings);
+	sf::RenderWindow window(sf::VideoMode(800,600), "I WANT TO DIE", sf::Style::Default, settings);
 	window.setFramerateLimit(60.0f);
 	window.setKeyRepeatEnabled(true);
 	window.setActive(true);
@@ -60,8 +90,11 @@ int main ( int argc, char** argv )
 	LevelData levelData;
 	Initialize ( argv[1], levelData, window );
 
+	Properties properties;
+	setProperties(argv[2], properties, window );
+
 	/* Creates a World object. */
-	World world( &window, &inputHandler, &levelData );
+	World world( &window, &inputHandler, &levelData, &properties );
 
 	while(window.isOpen())
 	{
@@ -83,7 +116,7 @@ int main ( int argc, char** argv )
 		inputHandler.UpdateInputStatus();
 
 		/* Refreshes the window. */
-		window.clear(COLOR_BG);
+		window.clear(sf::Color(40, 40, 40));
 
 		/* Updates World values and draws it. */
 		world.UpdateWorld();
