@@ -7,6 +7,7 @@
 #include "LevelData.h"
 #include "Properties.h"
 
+
 void Initialize( std::string dataFile, LevelData &levelData, sf::RenderWindow &window )
 {
 	/* Creates an ifstream. */
@@ -53,22 +54,14 @@ void setProperties(std::string dataFile, Properties &properties, sf::RenderWindo
 		inFile.close();
 		window.close();
 	}
-	inFile >> properties.FPS;
-	inFile >> properties.PLAYER_H;
-	inFile >> properties.PLAYER_W ;
-	inFile >> properties.H_ACCEL;
-	inFile >> properties.H_COEFF;
-	inFile >> properties.H_OPPOSITE;
-	inFile >> properties.H_AIR;
-	inFile >> properties.MIN_H_VEL;
-	inFile >> properties.MAX_H_VEL;
-	inFile >> properties.GRAVITY;
-	inFile >> properties.V_ACCEL;
-	inFile >> properties.V_HOLD;
-	inFile >> properties.V_SAFE;
-	inFile >> properties.CUT_V_VEL;
-	inFile >> properties.MAX_V_VEL;
-	inFile >> properties.GAP;
+
+	inFile >> properties.FPS >> properties.PLAYER_H >> properties.PLAYER_W  >> properties.H_ACCEL >> properties.H_COEFF >> properties.H_OPPOSITE
+	>> properties.H_AIR >> properties.MIN_H_VEL >> properties.MAX_H_VEL >> properties.GRAVITY >> properties.V_ACCEL >> properties.V_HOLD
+	>> properties.V_SAFE >> properties.CUT_V_VEL >> properties.MAX_V_VEL >> properties.GAP;
+
+	
+	inFile >> properties.CAM_EDGE1 >> properties.CAM_EDGE2 >> properties.CAM_EDGE3 >> properties.CAM_EDGE4;
+
 
 	inFile.close();
 }
@@ -76,7 +69,10 @@ void setProperties(std::string dataFile, Properties &properties, sf::RenderWindo
 int main ( int argc, char** argv )
 {
 	/* Initalizes the window. */
+	
 	sf::ContextSettings settings;
+	Properties properties;
+	LevelData levelData;
 	settings.antialiasingLevel = 8;
 	sf::RenderWindow window(sf::VideoMode(800,600), "I WANT TO DIE", sf::Style::Default, settings);
 	window.setFramerateLimit(60.0f);
@@ -87,14 +83,15 @@ int main ( int argc, char** argv )
 	InputHandler inputHandler;
 
 	/* Reads level data from a text file. */
-	LevelData levelData;
 	Initialize ( argv[1], levelData, window );
 
-	Properties properties;
+	/*Reads properties from a text file. */
 	setProperties(argv[2], properties, window );
 
+	sf::View view(sf::FloatRect(properties.CAM_EDGE1, properties.CAM_EDGE2, properties.CAM_EDGE3, properties.CAM_EDGE4));
+
 	/* Creates a World object. */
-	World world( &window, &inputHandler, &levelData, &properties );
+	World world( &window, &inputHandler, &levelData, &properties, &view );
 
 	while(window.isOpen())
 	{
@@ -118,9 +115,12 @@ int main ( int argc, char** argv )
 		/* Refreshes the window. */
 		window.clear(sf::Color(40, 40, 40));
 
+
 		/* Updates World values and draws it. */
 		world.UpdateWorld();
 		world.DrawWorld();
+
+		
 
 		/* Displays the game. */
 		window.display();

@@ -14,6 +14,7 @@ private:
 	sf::RenderWindow *window; 
 	InputHandler *inputHandler;
 	Properties *properties;
+	sf::View *view;
 
 	bool IsColliding( sf::FloatRect a, sf::FloatRect b )
 	{
@@ -85,13 +86,14 @@ private:
 	}
 
 public:
-	World( sf::RenderWindow *w, InputHandler *i, LevelData *ld, Properties *p )
+	World( sf::RenderWindow *w, InputHandler *i, LevelData *ld, Properties *p, sf::View *v )
 	{
 		player = new Player( w, i, &(ld->playerPosition),p );
 		walls = &(ld->walls);
 		window = w;
 		inputHandler = i;
 		properties = p;
+		view = v;
 	}
 	
 	void UpdateWorld ()
@@ -100,10 +102,13 @@ public:
 		ApplyHorizontalCollisionResponse();
 		player->UpdateVerticalMovement();
 		ApplyVerticalCollisionResponse();
+		view->setCenter(player->GetPosition());
 	}
 
 	void DrawWorld ()
 	{
+		
+		window->setView(*view);
 		for ( sf::RectangleShape* p : (*walls) )
 		{
 			window->draw ( ( *p ) );
