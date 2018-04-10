@@ -88,7 +88,8 @@ int main ( int argc, char** argv )
 	/*Reads properties from a text file. */
 	setProperties(argv[2], properties, window );
 
-	sf::View view(sf::FloatRect(properties.CAM_EDGE1, properties.CAM_EDGE2, properties.CAM_EDGE3, properties.CAM_EDGE4));
+	//initiallizes view (800 x 600 for the purpose of testing)
+	sf::View view(sf::FloatRect(0,0,800,600));//abs(properties.CAM_EDGE1) + abs(properties.CAM_EDGE3), abs(properties.CAM_EDGE2) + abs(properties.CAM_EDGE4)));
 
 	/* Creates a World object. */
 	World world( &window, &inputHandler, &levelData, &properties, &view );
