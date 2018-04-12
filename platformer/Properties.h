@@ -10,7 +10,7 @@ struct Properties
 	float CAM_DRIFT;
 	int CAM_EDGES[4];
 
-	bool cameraGuidesOn = false;
+	bool cameraGuidesOn = true;
 	void ToggleCameraGuides()
 	{
 		cameraGuidesOn = !cameraGuidesOn;
@@ -18,5 +18,3 @@ struct Properties
 };
 
 #endif
-
-

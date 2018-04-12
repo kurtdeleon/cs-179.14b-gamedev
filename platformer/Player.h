@@ -162,7 +162,7 @@ public:
 		player.setSize( sf::Vector2f( (p->PLAYER_W), (p->PLAYER_H) ) );
 		player.setOrigin( (p->PLAYER_W)/2, (p->PLAYER_H)/2 );
 		player.setPosition( (*pos) );
-		player.setFillColor( sf::Color(255, 240, 255));
+		player.setFillColor( sf::Color(255, 240, 255) );
 		window = w;
 		inputHandler = i;
 		properties = p;
@@ -172,6 +172,11 @@ public:
 		isSafeToJump = false;
 		FC_isSafeToJump = 0;
 		FC_isHoldingJump = 0;
+	}
+
+	bool IsGrounded()
+	{
+		return isGrounded;
 	}
 
 	sf::Vector2f GetPosition()

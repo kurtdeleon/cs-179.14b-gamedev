@@ -91,8 +91,7 @@ int main ( int argc, char** argv )
 	sf::View view;
 	view.setCenter( sf::Vector2f(0, 0) );
 	view.setSize( sf::Vector2f(800, 600) );
-	//view.setViewport( sf::FloatRect(0.25f, 0.25f, 0.5f, 0.5f) );
-
+	
 	/* Creates a World object. */
 	World world( &window, &inputHandler, &levelData, &properties, &view );
 

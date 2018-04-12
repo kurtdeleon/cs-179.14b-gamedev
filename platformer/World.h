@@ -105,9 +105,7 @@ public:
 		ApplyHorizontalCollisionResponse();
 		player->UpdateVerticalMovement();
 		ApplyVerticalCollisionResponse();
-		
-		camera->UpdateView();
-		window->setView(*view);
+		camera->UpdateCamera();
 	}
 
 	void DrawWorld ()
@@ -117,6 +115,7 @@ public:
 			window->draw ( ( *p ) );
 		}
 		player->Draw();
+		camera->UpdateAndDrawCameraGuides();
 	}
 };
 
