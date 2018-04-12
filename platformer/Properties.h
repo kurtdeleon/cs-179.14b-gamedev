@@ -8,7 +8,7 @@ struct Properties
 	float GRAVITY, V_ACCEL, V_HOLD, V_SAFE, CUT_V_VEL, MAX_V_VEL, GAP;
 	int CAM_TYPE;
 	float CAM_DRIFT;
-	float CAM_EDGE1, CAM_EDGE2, CAM_EDGE3, CAM_EDGE4;
+	int CAM_EDGES[4];
 
 	bool cameraGuidesOn = false;
 	void ToggleCameraGuides()
