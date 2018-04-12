@@ -29,11 +29,11 @@ private:
 		// Horizontal Snap
 		if( viewCenter.x - halfSize.x < 0 )
 		{
-			view->setCenter( offset, viewCenter.y );
+			view->setCenter( halfSize.x, viewCenter.y );
 		}
 		else if( viewCenter.x + halfSize.x > windowSize.x )
 		{
-			view->setCenter( windowSize.x - offset, viewCenter.y );
+			view->setCenter( windowSize.x - halfSize.x, viewCenter.y );
 		}
 
 		// Refresh viewCenter
@@ -42,14 +42,44 @@ private:
 		// Vertical Snap
 		if( viewCenter.y - halfSize.y < 0 )
 		{
-			view->setCenter( viewCenter.x, offset );
+			view->setCenter( viewCenter.x, halfSize.y );
 		}
 		else if( viewCenter.y + halfSize.y > windowSize.y )
 		{
-			view->setCenter( viewCenter.x, windowSize.y - offset );
+			view->setCenter( viewCenter.x, windowSize.y - halfSize.y );
 		}
 	}
 	*/
+		void EdgeSnap()
+	{
+		//sf::Vector2f halfSize = view->getSize()/2.f;
+		sf::Vector2f viewCenter = view->getCenter();
+		//sf::Vector2u windowSize = window->getSize();
+
+		// Horizontal Snap
+		if( viewCenter.x  < properties->CAM_EDGES[0] )
+		{
+			view->setCenter( properties->CAM_EDGES[0], viewCenter.y );
+		}
+		else if( viewCenter.x  > properties->CAM_EDGES[2] )
+		{
+			view->setCenter( properties->CAM_EDGES[2], viewCenter.y );
+		}
+
+		// Refresh viewCenter
+		viewCenter = view->getCenter();
+
+		// Vertical Snap
+		if( viewCenter.y  < properties->CAM_EDGES[1] )
+		{
+			view->setCenter( viewCenter.x, properties->CAM_EDGES[1] );
+		}
+		else if( viewCenter.y > properties->CAM_EDGES[3] )
+		{
+			view->setCenter( viewCenter.x, properties->CAM_EDGES[3] );
+		}
+	}
+	
 
 	/*void EdgeSnap()
 	{
