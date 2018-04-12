@@ -5,11 +5,13 @@
 #include "InputHandler.h"
 #include "LevelData.h"
 #include "Properties.h"
+#include "Camera.h"
 
 class World
 {
 private:
 	Player *player;
+	Camera *camera;
 	std::vector<sf::RectangleShape*> *walls;
 	sf::RenderWindow *window; 
 	InputHandler *inputHandler;
@@ -35,7 +37,7 @@ private:
 				float wallHorizontalPosition = wall->getPosition().x;
 
 				float collisionResponseWidth = player->GetSize().x/2 
-					+ wall->getSize().x/2 + properties->GAP;
+				+ wall->getSize().x/2 + properties->GAP;
 				
 				/* Player is to the LEFT of the wall.*/
 				if ( playerHorizontalPosition < wallHorizontalPosition )
@@ -67,7 +69,7 @@ private:
 				float wallVerticalPosition = wall->getPosition().y;
 
 				float collisionResponseWidth = player->GetSize().y/2 
-					+ wall->getSize().y/2 + properties->GAP;
+				+ wall->getSize().y/2 + properties->GAP;
 
 				if ( playerVerticalPosition < wallVerticalPosition )
 				{
@@ -84,31 +86,12 @@ private:
 			}
 		}
 	}
-	void positionLock(){
-		view->setCenter(player->GetPosition());
-	}
-
-	void edgeSnapping(){
-		sf::Vector2f halfSize = view->getSize()/2.f;
-			if(view->getCenter().x - halfSize.x < 0 ){
-				view->setCenter(250, view->getCenter().y);
-			}
-			else if(view->getCenter().x + halfSize.x > 800)	{
-			 view->setCenter(800 - 250, view->getCenter().y);
-			}
-			if(view->getCenter().y - halfSize.y < 0 ){
-				view->setCenter( view->getCenter().x,250);
-			}
-			else if(view->getCenter().y + halfSize.y > 600)	{
-			 view->setCenter(view->getCenter().x, 600 - 250);
-			}
-			
-		}
 
 public:
 	World( sf::RenderWindow *w, InputHandler *i, LevelData *ld, Properties *p, sf::View *v )
 	{
 		player = new Player( w, i, &(ld->playerPosition),p );
+		camera = new Camera( w, p, v, player );
 		walls = &(ld->walls);
 		window = w;
 		inputHandler = i;
@@ -122,22 +105,13 @@ public:
 		ApplyHorizontalCollisionResponse();
 		player->UpdateVerticalMovement();
 		ApplyVerticalCollisionResponse();
-		if(properties->CAM_TYPE == 0 )
-		{
-			positionLock();
-		}
-
-		else if(properties-> CAM_TYPE == 1){
-			positionLock();
-			edgeSnapping();
-		}
+		
+		camera->UpdateView();
+		window->setView(*view);
 	}
 
 	void DrawWorld ()
 	{	
-		window->setView(*view);
-		
-
 		for ( sf::RectangleShape* p : (*walls) )
 		{
 			window->draw ( ( *p ) );
