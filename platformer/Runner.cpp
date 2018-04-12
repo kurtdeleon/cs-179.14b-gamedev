@@ -59,9 +59,11 @@ void setProperties(std::string dataFile, Properties &properties, sf::RenderWindo
 	>> properties.H_AIR >> properties.MIN_H_VEL >> properties.MAX_H_VEL >> properties.GRAVITY >> properties.V_ACCEL >> properties.V_HOLD
 	>> properties.V_SAFE >> properties.CUT_V_VEL >> properties.MAX_V_VEL >> properties.GAP;
 
+	inFile >> properties.CAM_TYPE;
 	
 	inFile >> properties.CAM_EDGE1 >> properties.CAM_EDGE2 >> properties.CAM_EDGE3 >> properties.CAM_EDGE4;
 
+	inFile >> properties.CAM_DRIFT;
 
 	inFile.close();
 }
@@ -89,7 +91,7 @@ int main ( int argc, char** argv )
 	setProperties(argv[2], properties, window );
 
 	//initiallizes view (800 x 600 for the purpose of testing)
-	sf::View view(sf::FloatRect(0,0,800,600));//abs(properties.CAM_EDGE1) + abs(properties.CAM_EDGE3), abs(properties.CAM_EDGE2) + abs(properties.CAM_EDGE4)));
+	sf::View view(sf::FloatRect(0,0,500,500));//abs(properties.CAM_EDGE1) + abs(properties.CAM_EDGE3), abs(properties.CAM_EDGE2) + abs(properties.CAM_EDGE4)));
 
 	/* Creates a World object. */
 	World world( &window, &inputHandler, &levelData, &properties, &view );

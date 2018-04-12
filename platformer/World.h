@@ -84,6 +84,26 @@ private:
 			}
 		}
 	}
+	void positionLock(){
+		view->setCenter(player->GetPosition());
+	}
+
+	void edgeSnapping(){
+		sf::Vector2f halfSize = view->getSize()/2.f;
+			if(view->getCenter().x - halfSize.x < 0 ){
+				view->setCenter(250, view->getCenter().y);
+			}
+			else if(view->getCenter().x + halfSize.x > 800)	{
+			 view->setCenter(800 - 250, view->getCenter().y);
+			}
+			if(view->getCenter().y - halfSize.y < 0 ){
+				view->setCenter( view->getCenter().x,250);
+			}
+			else if(view->getCenter().y + halfSize.y > 600)	{
+			 view->setCenter(view->getCenter().x, 600 - 250);
+			}
+			
+		}
 
 public:
 	World( sf::RenderWindow *w, InputHandler *i, LevelData *ld, Properties *p, sf::View *v )
@@ -102,13 +122,22 @@ public:
 		ApplyHorizontalCollisionResponse();
 		player->UpdateVerticalMovement();
 		ApplyVerticalCollisionResponse();
-		view->setCenter(player->GetPosition());
+		if(properties->CAM_TYPE == 0 )
+		{
+			positionLock();
+		}
+
+		else if(properties-> CAM_TYPE == 1){
+			positionLock();
+			edgeSnapping();
+		}
 	}
 
 	void DrawWorld ()
-	{
-		
+	{	
 		window->setView(*view);
+		
+
 		for ( sf::RectangleShape* p : (*walls) )
 		{
 			window->draw ( ( *p ) );
