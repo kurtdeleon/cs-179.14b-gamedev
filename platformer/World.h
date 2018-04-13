@@ -115,7 +115,10 @@ public:
 			window->draw ( ( *p ) );
 		}
 		player->Draw();
-		camera->UpdateAndDrawCameraGuides();
+		if ( properties->cameraGuidesOn) 
+		{
+			camera->UpdateAndDrawCameraGuides();
+		}
 	}
 };
 
