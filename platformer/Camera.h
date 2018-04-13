@@ -110,12 +110,14 @@ private:
 
 	void CW_WithPositionSnapping()
 	{
-		if ( currentOffset == sf::Vector2f(0, 0) )
+		if ( abs(currentOffset.x) == 0 && abs(currentOffset.y) == 0 )
 		{
 			sf::Vector2f direction = Normalize( player->GetPosition() - view->getCenter() );
 			float distance = GetDistance( view->getCenter(), player->GetPosition() );
 
-			if ( distance < properties->CAM_DRIFT && distance > 0 )
+
+
+			if ( distance < properties->CAM_DRIFT && distance >= 0 )
 			{
 				view->setCenter( player->GetPosition() );
 			}
@@ -132,7 +134,7 @@ private:
 
 	void CW_WithPlatformSnapping()
 	{
-		if ( currentOffset == sf::Vector2f(0, 0) && player->IsGrounded() )
+		if ( abs(currentOffset.x) == 0 && abs(currentOffset.y) == 0 && player->IsGrounded() )
 		{
 			float distance = player->GetPosition().y - view->getCenter().y;
 
@@ -174,7 +176,7 @@ private:
 		edgeSnapGuides.setOrigin( sf::Vector2f( edgeSnapGuides.getSize().x/2.f, edgeSnapGuides.getSize().y/2.f ) );
 		edgeSnapGuides.setFillColor( sf::Color::Transparent );
 		edgeSnapGuides.setOutlineColor( sf::Color(255, 209, 220) );
-		edgeSnapGuides.setOutlineThickness( 15 ); 
+		edgeSnapGuides.setOutlineThickness( 10 ); 
 
 		/* Camera Window for Cam 2, 3, 4 */
 		cameraWindowHalfSize = sf::Vector2f( abs(properties->CAM_EDGES[0] - properties->CAM_EDGES[2])/2.f,
