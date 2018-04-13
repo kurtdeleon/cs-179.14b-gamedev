@@ -55,7 +55,10 @@ void setProperties( std::string dataFile, Properties &properties, sf::RenderWind
 		window.close();
 	}
 
-	inFile >> properties.FPS >> properties.PLAYER_H >> properties.PLAYER_W  >> properties.H_ACCEL >> properties.H_COEFF >> properties.H_OPPOSITE
+	float fps;
+	inFile >> fps;
+	properties.FPS = 1.f / fps;
+	inFile >> properties.PLAYER_H >> properties.PLAYER_W  >> properties.H_ACCEL >> properties.H_COEFF >> properties.H_OPPOSITE
 	>> properties.H_AIR >> properties.MIN_H_VEL >> properties.MAX_H_VEL >> properties.GRAVITY >> properties.V_ACCEL >> properties.V_HOLD
 	>> properties.V_SAFE >> properties.CUT_V_VEL >> properties.MAX_V_VEL >> properties.GAP;
 

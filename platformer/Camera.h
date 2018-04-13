@@ -14,7 +14,7 @@ private:
 	sf::View *view;
 
 	sf::Vector2f cameraWindowHalfSize;
-	sf::RectangleShape cameraWindow;
+	sf::RectangleShape cameraWindow,eSnap,plHor,plVert;
 	sf::Vector2f currentOffset;
 
 	void PositionLock()
@@ -166,14 +166,32 @@ public:
 		view = v;
 		player = pl;
 
+		plVert.setSize(sf::Vector2f(1.f,120.f));
+		plVert.setOrigin(sf::Vector2f((plVert.getSize().x) / 2,(plVert.getSize().y) / 2));
+		plVert.setFillColor(sf::Color::Red);
+
+		plHor.setSize(sf::Vector2f(120.f,1.f));
+		plHor.setOrigin(sf::Vector2f((plHor.getSize().x) / 2,(plHor.getSize().y) / 2));
+		plHor.setFillColor(sf::Color::Red);
+
 		cameraWindowHalfSize = sf::Vector2f( abs(properties->CAM_EDGES[0] - properties->CAM_EDGES[2])/2.f,
 			abs(properties->CAM_EDGES[1] - properties->CAM_EDGES[3])/2.f);
+
+		
+		sf::Vector2f halfView(sf::Vector2f(view->getSize().x/2.f,view->getSize().y/2.f));
+						
+		eSnap.setSize(sf::Vector2f(view->getSize().x + abs(properties->CAM_EDGES[0] -properties->CAM_EDGES[2])-10.f,view->getSize().y + abs(properties->CAM_EDGES[1]-properties->CAM_EDGES[3]) - 10.f));
+		eSnap.setOrigin(sf::Vector2f(eSnap.getSize().x/2.f,eSnap.getSize().y/2.f));
+		eSnap.setFillColor(sf::Color::Transparent);
+		eSnap.setOutlineColor( sf::Color::Red);
+		eSnap.setOutlineThickness(10); 
+	
 
 		cameraWindow.setSize( sf::Vector2f(cameraWindowHalfSize.x * 2, cameraWindowHalfSize.y * 2) );
 		cameraWindow.setOrigin( sf::Vector2f(cameraWindowHalfSize.x, cameraWindowHalfSize.y) );
 		cameraWindow.setFillColor ( sf::Color::Transparent );
 		cameraWindow.setOutlineColor ( sf::Color(255, 240, 255) );
-		cameraWindow.setOutlineThickness ( 1 );
+		cameraWindow.setOutlineThickness ( 10 );
 	}
 
 	void UpdateAndDrawCameraGuides()
@@ -182,10 +200,17 @@ public:
 		{
 			case 0:
 			//TODO draw code goes here
+			plVert.setPosition(view->getCenter());
+			plHor.setPosition(view->getCenter());
+			if (properties->cameraGuidesOn) 
+				window->draw(plVert);
+				window->draw(plHor);
 			break;
 
 			case 1:
 			//TODO draw code goes here
+			eSnap.setPosition(sf::Vector2f(window->getSize().x/2.f,window->getSize().y/2.f));
+			if (properties->cameraGuidesOn) window->draw(eSnap);
 			break;
 
 			case 2: case 3: case 4:
