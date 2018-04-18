@@ -55,9 +55,8 @@ void setProperties( std::string dataFile, Properties &properties, sf::RenderWind
 		window.close();
 	}
 
-	float fps;
-	inFile >> fps;
-	properties.FPS = 1.f / fps;
+	float frames;
+	inFile >> frames;
 	inFile >> properties.PLAYER_H >> properties.PLAYER_W  >> properties.H_ACCEL >> properties.H_COEFF >> properties.H_OPPOSITE
 	>> properties.H_AIR >> properties.MIN_H_VEL >> properties.MAX_H_VEL >> properties.GRAVITY >> properties.V_ACCEL >> properties.V_HOLD
 	>> properties.V_SAFE >> properties.CUT_V_VEL >> properties.MAX_V_VEL >> properties.GAP;
@@ -65,6 +64,14 @@ void setProperties( std::string dataFile, Properties &properties, sf::RenderWind
 	inFile >> properties.CAM_TYPE;
 	inFile >> properties.CAM_EDGES[0] >> properties.CAM_EDGES[1] >> properties.CAM_EDGES[2] >> properties.CAM_EDGES[3];
 	inFile >> properties.CAM_DRIFT;
+
+	properties.FPS = frames;
+	properties.H_ACCEL /= frames;
+	properties.MAX_H_VEL /= frames;
+	properties.GRAVITY /= frames;
+	properties.MAX_V_VEL /= frames;
+	properties.V_ACCEL /= frames;
+	properties.CUT_V_VEL /= frames;
 
 	inFile.close();
 }

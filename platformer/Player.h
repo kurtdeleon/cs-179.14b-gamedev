@@ -40,8 +40,8 @@ private:
 	void ClampHorizontalVelocity()
 	{
 		/* MAX_VEL */ 
-		if ( velocity.x > properties->MAX_H_VEL * properties->FPS ) velocity.x = properties->MAX_H_VEL * properties->FPS;
-		if ( velocity.x < -(properties->MAX_H_VEL * properties->FPS) ) velocity.x = -(properties->MAX_H_VEL * properties->FPS);
+		if ( velocity.x > properties->MAX_H_VEL  ) velocity.x = properties->MAX_H_VEL ;
+		if ( velocity.x < -(properties->MAX_H_VEL ) ) velocity.x = -(properties->MAX_H_VEL );
 
 		/* MIN_VEL */
 		if ( std::abs( velocity.x ) <= properties->MIN_H_VEL) velocity.x = 0;
@@ -54,11 +54,11 @@ private:
 		/* If yes, then addition acceleration is multiplied. */
 		if ( velocity.x > 0 )
 		{
-			acceleration.x -= ((properties->H_ACCEL * properties->FPS) * properties->H_OPPOSITE);
+			acceleration.x -= ((properties->H_ACCEL ) * properties->H_OPPOSITE);
 		}
 		else
 		{
-			acceleration.x -= properties->H_ACCEL * properties->FPS;
+			acceleration.x -= properties->H_ACCEL ;
 		}
 	}
 
@@ -69,11 +69,11 @@ private:
 		/* If yes, then addition acceleration is multiplied. */
 		if ( velocity.x < 0 )
 		{
-			acceleration.x += ((properties->H_ACCEL * properties->FPS) * properties->H_OPPOSITE);
+			acceleration.x += ((properties->H_ACCEL ) * properties->H_OPPOSITE);
 		}
 		else
 		{
-			acceleration.x += properties->H_ACCEL * properties->FPS;
+			acceleration.x += properties->H_ACCEL ;
 		}
 	}
 
@@ -85,20 +85,20 @@ private:
 
 	void ApplyGravity() 
 	{
-		acceleration.y += properties->GRAVITY * properties->FPS;
+		acceleration.y += properties->GRAVITY ;
 	}
 
 	/* Clamps vertical velocity. */
 	void ClampVerticalVelocity()
 	{
 		/* Clamp when plpayer is going down. */
-		if ( velocity.y > properties->MAX_V_VEL * properties->FPS ) velocity.y = properties->MAX_V_VEL * properties->FPS;
+		if ( velocity.y > properties->MAX_V_VEL  ) velocity.y = properties->MAX_V_VEL ;
 	}
 
 	void Jump ()
 	{
 		velocity.y = 0;
-		acceleration.y += properties->V_ACCEL * properties->FPS;
+		acceleration.y += properties->V_ACCEL ;
 	}
 
 	void UpdateFrameCounters()
@@ -255,7 +255,7 @@ public:
 		}
 		else if ( hasCut )
 		{
-			velocity.y = properties->CUT_V_VEL * properties->FPS;
+			velocity.y = properties->CUT_V_VEL ;
 			FC_isHoldingJump = 0;
 			acceleration.y = 0;
 			hasCut = false;
