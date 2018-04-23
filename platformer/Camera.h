@@ -172,7 +172,7 @@ private:
 
 		/* Guide for Cam 1 */
 		edgeSnapGuides.setSize( sf::Vector2f( view->getSize().x + abs(properties->CAM_EDGES[0] - properties->CAM_EDGES[2]) - 10.f,
-			view->getSize().y + abs( properties->CAM_EDGES[1] - properties->CAM_EDGES[3]) - 10.f ) );
+											  view->getSize().y + abs(properties->CAM_EDGES[1] - properties->CAM_EDGES[3]) - 10.f ) );
 		edgeSnapGuides.setOrigin( sf::Vector2f( edgeSnapGuides.getSize().x/2.f, edgeSnapGuides.getSize().y/2.f ) );
 		edgeSnapGuides.setFillColor( sf::Color::Transparent );
 		edgeSnapGuides.setOutlineColor( sf::Color(255, 209, 220) );
@@ -206,18 +206,18 @@ public:
 			case 0:
 			crossHairVertical.setPosition( view->getCenter() );
 			crossHairHorizontal.setPosition( view->getCenter() );
-			window->draw(crossHairVertical);
-			window->draw(crossHairHorizontal);
+			//window->draw(crossHairVertical);
+			//window->draw(crossHairHorizontal);
 			break;
 
 			case 1:
 			edgeSnapGuides.setPosition( sf::Vector2f( window->getSize().x / 2.f, window->getSize().y / 2.f ) );
-			window->draw(edgeSnapGuides);
+			//window->draw(edgeSnapGuides);
 			break;
 
 			case 2: case 3: case 4:
 			cameraWindow.setPosition( view->getCenter() );
-			window->draw(cameraWindow);
+			//window->draw(cameraWindow);
 			break;
 		}
 	}

@@ -41,6 +41,21 @@ void Initialize( std::string dataFile, LevelData &levelData, sf::RenderWindow &w
 		levelData.walls.push_back( rect );
 	}
 
+	int numberOfCoins;
+	inFile >> numberOfCoins;
+	for ( int i = 0; i < numberOfCoins; i++){
+		sf::Vector2f pos;
+		float rad;
+		inFile >> pos.x >> pos.y;
+		inFile >> rad;
+		sf::CircleShape* circ = new sf::CircleShape( rad );
+		circ->setFillColor( sf::Color::Yellow );
+		circ->setOrigin( rad/2, rad/2 );
+		circ->setPosition( pos );
+
+		levelData.coins.push_back( circ );
+	}
+
 	inFile.close();
 }
 
@@ -107,6 +122,7 @@ int main ( int argc, char** argv )
 
 	while(window.isOpen())
 	{
+		
 		/* Checks if user wants to close game. */
 		sf::Event event;
 		while (window.pollEvent(event))

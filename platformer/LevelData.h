@@ -6,6 +6,8 @@ struct LevelData
 {
 	sf::Vector2f playerPosition;
 	std::vector<sf::RectangleShape*> walls;
+	std::vector<sf::CircleShape*> coins;
+	int coinCount;
 };
 
 #endif

@@ -13,6 +13,8 @@ private:
 	Player *player;
 	Camera *camera;
 	std::vector<sf::RectangleShape*> *walls;
+	std::vector<sf::CircleShape*> *coins;
+	//int *coinCount = 0;
 	sf::RenderWindow *window; 
 	InputHandler *inputHandler;
 	Properties *properties;
@@ -87,12 +89,35 @@ private:
 		}
 	}
 
+	void coinCollect()
+	{
+		for (sf::CircleShape* coin : (*coins))
+		{
+			if ( IsColliding(coin->getGlobalBounds(), player->GetAABB()))
+			{
+				coin->setPosition(sf::Vector2f(0,0));
+				//*coinCount++;
+			}
+		}
+	}
+/*
+	void WIN()
+	{
+		if (*coinCount = 1)
+		{
+			player->ChangePosition( 0, 0 );
+		}
+	}
+*/
+
 public:
 	World( sf::RenderWindow *w, InputHandler *i, LevelData *ld, Properties *p, sf::View *v )
 	{
 		player = new Player( w, i, &(ld->playerPosition),p );
 		camera = new Camera( w, p, v, player );
 		walls = &(ld->walls);
+		coins = &(ld->coins);
+		//coinCount = &(ld->coinCount);
 		window = w;
 		inputHandler = i;
 		properties = p;
@@ -105,6 +130,8 @@ public:
 		ApplyHorizontalCollisionResponse();
 		player->UpdateVerticalMovement();
 		ApplyVerticalCollisionResponse();
+		coinCollect();
+		//WIN();
 		camera->UpdateCamera();
 	}
 
@@ -113,6 +140,11 @@ public:
 		for ( sf::RectangleShape* p : (*walls) )
 		{
 			window->draw ( ( *p ) );
+		}
+
+		for ( sf::CircleShape* c : (*coins))
+		{
+			window->draw ( ( *c ) );
 		}
 		player->Draw();
 		if ( properties->cameraGuidesOn) 
