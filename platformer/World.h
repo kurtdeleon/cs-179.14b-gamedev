@@ -111,9 +111,9 @@ private:
 */
 
 public:
-	World( sf::RenderWindow *w, InputHandler *i, LevelData *ld, Properties *p, sf::View *v )
+	World( sf::RenderWindow *w, InputHandler *i, LevelData *ld, Properties *p, sf::View *v, sf::Texture *tex )
 	{
-		player = new Player( w, i, &(ld->playerPosition),p );
+		player = new Player( w, i, &(ld->playerPosition),p,tex );
 		camera = new Camera( w, p, v, player );
 		walls = &(ld->walls);
 		coins = &(ld->coins);

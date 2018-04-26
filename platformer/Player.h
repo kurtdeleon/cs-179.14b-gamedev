@@ -14,6 +14,7 @@ private:
 	InputHandler *inputHandler;
 	Properties *properties;
 	sf::Vector2f velocity, acceleration;
+	sf::Texture *tex;
 
 	bool isGrounded, canStillJump, isSafeToJump, hasCut, hasJumped;
 	int FC_isHoldingJump, FC_isSafeToJump;
@@ -60,6 +61,7 @@ private:
 		{
 			acceleration.x -= properties->H_ACCEL ;
 		}
+		player.setScale(-1,1);
 	}
 
 	/* Apply called when player is moving to the right. */
@@ -75,6 +77,7 @@ private:
 		{
 			acceleration.x += properties->H_ACCEL ;
 		}
+		player.setScale(1,1);
 	}
 
 	////////////////////////////////////////////
@@ -157,12 +160,13 @@ private:
 	}
 
 public:
-	Player( sf::RenderWindow *w, InputHandler *i, sf::Vector2f *pos, Properties *p )
+	Player( sf::RenderWindow *w, InputHandler *i, sf::Vector2f *pos, Properties *p, sf::Texture *tex )
 	{
 		player.setSize( sf::Vector2f( (p->PLAYER_W), (p->PLAYER_H) ) );
 		player.setOrigin( (p->PLAYER_W)/2, (p->PLAYER_H)/2 );
 		player.setPosition( (*pos) );
-		player.setFillColor( sf::Color(255, 240, 255) );
+		player.setTexture(tex);
+		//player.setFillColor( sf::Color(255, 240, 255) );
 		window = w;
 		inputHandler = i;
 		properties = p;

@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -8,7 +9,7 @@
 #include "Properties.h"
 
 
-void Initialize( std::string dataFile, LevelData &levelData, sf::RenderWindow &window )
+void Initialize( std::string dataFile, LevelData &levelData, sf::RenderWindow &window, sf::Texture &texture, sf::Texture &texture2 )
 {
 	/* Creates an ifstream. */
 	std::ifstream inFile;
@@ -34,7 +35,8 @@ void Initialize( std::string dataFile, LevelData &levelData, sf::RenderWindow &w
 		inFile >> pos.x >> pos.y;
 		inFile >> size.x >> size.y;
 		sf::RectangleShape* rect = new sf::RectangleShape( size );
-		rect->setFillColor( sf::Color(50, 50, 50) );
+		rect->setTexture(&texture);
+		rect->setFillColor( sf::Color(60, 40, 50) );
 		rect->setOrigin( size.x/2, size.y/2 );
 		rect->setPosition( pos );
 
@@ -49,7 +51,8 @@ void Initialize( std::string dataFile, LevelData &levelData, sf::RenderWindow &w
 		inFile >> pos.x >> pos.y;
 		inFile >> rad;
 		sf::CircleShape* circ = new sf::CircleShape( rad );
-		circ->setFillColor( sf::Color::Yellow );
+		//circ->setFillColor( sf::Color::Yellow );
+		circ->setTexture(&texture2);
 		circ->setOrigin( rad/2, rad/2 );
 		circ->setPosition( pos );
 
@@ -101,12 +104,61 @@ int main ( int argc, char** argv )
 	window.setKeyRepeatEnabled(false);
 	window.setActive(true);
 
+
+	/* initializes music, sounds, and textures */
+	sf::Music music;
+	if( !music.openFromFile("music.wav")){
+		window.close();
+	}
+	music.setLoop(true);
+	music.setVolume(50.f);
+
+	sf::Sound coinsound;
+	sf::SoundBuffer coinbuffer;
+	if(!coinbuffer.loadFromFile("item_pickup.flac")){
+		window.close();
+	}
+	coinsound.setBuffer(coinbuffer);
+
+	sf::Texture bg;
+		if (!bg.loadFromFile("background.png"))
+		{
+			window.close();
+		}
+	sf::Sprite bground(bg);
+	bground.setTextureRect(sf::IntRect(0, 0, 800, 600));
+	bground.setOrigin(sf::Vector2f(400,300));
+
+	sf::Texture tiles;
+		if(!tiles.loadFromFile("tiles.jpg"))
+		{
+			window.close();
+		}
+	tiles.setSmooth(true);
+	tiles.setRepeated(true);
+
+	sf::Texture coin;
+		if(!coin.loadFromFile("coins.png"))
+		{
+			window.close();
+		}
+	coin.setSmooth(true);
+
+	sf::Texture playertex;
+		if(!playertex.loadFromFile("idle.gif"))
+		{
+			window.close();
+		}
+	playertex.setSmooth(true);
+
+	
+
 	/* Creates an InputHandler object. */
 	InputHandler inputHandler;
 
 	/* Reads level data from a text file. */
 	LevelData levelData;
-	Initialize ( argv[1], levelData, window );
+	Initialize ( argv[1], levelData, window, tiles, coin );
 
 	/*Reads properties from a text file. */
 	Properties properties;
@@ -118,7 +170,7 @@ int main ( int argc, char** argv )
 	view.setSize( sf::Vector2f(800, 600) );
 	
 	/* Creates a World object. */
-	World world( &window, &inputHandler, &levelData, &properties, &view );
+	World world( &window, &inputHandler, &levelData, &properties, &view, &playertex );
 
 	while(window.isOpen())
 	{
@@ -131,6 +183,8 @@ int main ( int argc, char** argv )
 				(event.type == sf::Event::KeyPressed && 
 					event.key.code == sf::Keyboard::Escape) )
 			{ 
+				music.stop();
+				coinsound.stop();
 				window.close();
 			}
 
@@ -143,6 +197,14 @@ int main ( int argc, char** argv )
 
 		/* Main runner loop functions below. */
 
+		if(music.getStatus()== sf::SoundSource::Playing)
+		{
+		}
+		else{
+			music.play();
+		}
+		
+
 		/* Updates the input status of the game. */
 		inputHandler.UpdateInputStatus();
 
@@ -150,8 +212,11 @@ int main ( int argc, char** argv )
 		window.clear(sf::Color(40, 40, 40));
 
 		/* Updates World values and draws it. */
+		bground.setPosition(view.getCenter());
+		window.draw(bground);
 		world.UpdateWorld();
 		world.DrawWorld();
+		
 
 		/* Displays the game. */
 		window.display();
