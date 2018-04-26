@@ -6,19 +6,26 @@
 #include "LevelData.h"
 #include "Properties.h"
 #include "Camera.h"
+#include "Sounds.h"
+#include "Textures.h"
+#include "Interface.h"
 
 class World
 {
 private:
+	sf::Sprite bg;
 	Player *player;
-	Camera *camera;
 	std::vector<sf::RectangleShape*> *walls;
 	std::vector<sf::CircleShape*> *coins;
-	//int *coinCount = 0;
 	sf::RenderWindow *window; 
+	sf::View *view;
+	Camera *camera;
+	Sounds *sounds;
+	Textures *textures;
+	LevelData *levelData;
 	InputHandler *inputHandler;
 	Properties *properties;
-	sf::View *view;
+	Interface *UI;
 
 	bool IsColliding( sf::FloatRect a, sf::FloatRect b )
 	{
@@ -89,39 +96,55 @@ private:
 		}
 	}
 
-	void coinCollect()
+	void CoinCollision()
 	{
 		for (sf::CircleShape* coin : (*coins))
 		{
 			if ( IsColliding(coin->getGlobalBounds(), player->GetAABB()))
 			{
-				coin->setPosition(sf::Vector2f(0,0));
-				//*coinCount++;
+				coin->setPosition( sf::Vector2f(-100, -100) );
+				levelData->coinCounter++;
 			}
 		}
 	}
-/*
-	void WIN()
+	
+	void CheckObjectCollisions()
 	{
-		if (*coinCount = 1)
-		{
-			player->ChangePosition( 0, 0 );
-		}
+		CoinCollision();
 	}
-*/
 
 public:
-	World( sf::RenderWindow *w, InputHandler *i, LevelData *ld, Properties *p, sf::View *v, sf::Texture *tex )
+	World( sf::RenderWindow *w, InputHandler *i, LevelData *ld, Properties *p, sf::View *v, Sounds *s, Textures *t )
 	{
-		player = new Player( w, i, &(ld->playerPosition),p,tex );
+		player = new Player( w, i, &(ld->playerPosition), p, t );
 		camera = new Camera( w, p, v, player );
 		walls = &(ld->walls);
 		coins = &(ld->coins);
-		//coinCount = &(ld->coinCount);
+		levelData = ld;
 		window = w;
 		inputHandler = i;
 		properties = p;
 		view = v;
+		sounds = s;
+		textures = t;
+		UI = new Interface( w, coins->size() );
+	}
+
+	void InitializeWorld()
+	{
+		bg.setTexture( textures->bgTexture );
+		bg.setTextureRect( sf::IntRect( 0, 0, properties->WINDOW_H, properties->WINDOW_W ) );
+		bg.setOrigin( sf::Vector2f( properties->WINDOW_H/2, properties->WINDOW_W/2 ) );
+
+		for ( sf::RectangleShape* p : (*walls) )
+		{
+			p->setTexture( &(textures->tile) );
+		}
+
+		for ( sf::CircleShape* c : (*coins))
+		{
+			c->setTexture( &(textures->coin) );
+		}
 	}
 	
 	void UpdateWorld ()
@@ -130,13 +153,18 @@ public:
 		ApplyHorizontalCollisionResponse();
 		player->UpdateVerticalMovement();
 		ApplyVerticalCollisionResponse();
-		coinCollect();
-		//WIN();
+		CheckObjectCollisions();
 		camera->UpdateCamera();
+		bg.setPosition( view->getCenter() );
+		sounds->PlayMusic();
+		levelData->CheckGameStatus();
+		UI->Update( levelData->coinCounter, view->getCenter() );
 	}
 
 	void DrawWorld ()
 	{	
+		window->draw( bg );
+		
 		for ( sf::RectangleShape* p : (*walls) )
 		{
 			window->draw ( ( *p ) );
@@ -146,11 +174,15 @@ public:
 		{
 			window->draw ( ( *c ) );
 		}
+		
 		player->Draw();
+
 		if ( properties->cameraGuidesOn) 
 		{
 			camera->UpdateAndDrawCameraGuides();
 		}
+
+		UI->Draw();
 	}
 };
 

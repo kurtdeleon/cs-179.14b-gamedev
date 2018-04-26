@@ -5,6 +5,7 @@
 
 #include "Properties.h"
 #include "InputHandler.h"
+#include "Textures.h"
 
 class Player
 {
@@ -14,7 +15,7 @@ private:
 	InputHandler *inputHandler;
 	Properties *properties;
 	sf::Vector2f velocity, acceleration;
-	sf::Texture *tex;
+	Textures *textures;
 
 	bool isGrounded, canStillJump, isSafeToJump, hasCut, hasJumped;
 	int FC_isHoldingJump, FC_isSafeToJump;
@@ -159,23 +160,28 @@ private:
 		}
 	}
 
-public:
-	Player( sf::RenderWindow *w, InputHandler *i, sf::Vector2f *pos, Properties *p, sf::Texture *tex )
+	void InitializePlayer( sf::Vector2f *pos )
 	{
-		player.setSize( sf::Vector2f( (p->PLAYER_W), (p->PLAYER_H) ) );
-		player.setOrigin( (p->PLAYER_W)/2, (p->PLAYER_H)/2 );
+		player.setSize( sf::Vector2f( (properties->PLAYER_W), (properties->PLAYER_H) ) );
+		player.setOrigin( (properties->PLAYER_W)/2, (properties->PLAYER_H)/2 );
 		player.setPosition( (*pos) );
-		player.setTexture(tex);
-		//player.setFillColor( sf::Color(255, 240, 255) );
+		player.setTexture( &(textures->playerTexture) );
+	}
+
+public:
+	Player( sf::RenderWindow *w, InputHandler *i, sf::Vector2f *pos, Properties *p, Textures *t )
+	{
 		window = w;
 		inputHandler = i;
 		properties = p;
+		textures = t;
 		canStillJump = false;
 		hasCut = false;
 		isGrounded = false;
 		isSafeToJump = false;
 		FC_isSafeToJump = 0;
 		FC_isHoldingJump = 0;
+		InitializePlayer( pos );
 	}
 
 	bool IsGrounded()

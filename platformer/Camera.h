@@ -115,8 +115,6 @@ private:
 			sf::Vector2f direction = Normalize( player->GetPosition() - view->getCenter() );
 			float distance = GetDistance( view->getCenter(), player->GetPosition() );
 
-
-
 			if ( distance < properties->CAM_DRIFT && distance >= 0 )
 			{
 				view->setCenter( player->GetPosition() );
@@ -206,18 +204,14 @@ public:
 			case 0:
 			crossHairVertical.setPosition( view->getCenter() );
 			crossHairHorizontal.setPosition( view->getCenter() );
-			//window->draw(crossHairVertical);
-			//window->draw(crossHairHorizontal);
 			break;
 
 			case 1:
 			edgeSnapGuides.setPosition( sf::Vector2f( window->getSize().x / 2.f, window->getSize().y / 2.f ) );
-			//window->draw(edgeSnapGuides);
 			break;
 
 			case 2: case 3: case 4:
 			cameraWindow.setPosition( view->getCenter() );
-			//window->draw(cameraWindow);
 			break;
 		}
 	}

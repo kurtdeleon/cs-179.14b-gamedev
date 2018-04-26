@@ -9,6 +9,8 @@ struct Properties
 	int CAM_TYPE;
 	float CAM_DRIFT;
 	int CAM_EDGES[4];
+	int WINDOW_H = 800;
+	int WINDOW_W = 600;
 
 	bool cameraGuidesOn = true;
 	void ToggleCameraGuides()
