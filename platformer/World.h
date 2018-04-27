@@ -104,6 +104,16 @@ private:
 			{
 				coin->setPosition( sf::Vector2f(-100, -100) );
 				levelData->coinCounter++;
+				sounds->PlaySFX( "coin" );
+				levelData->CheckGameStatus();
+
+				if ( levelData->hasWon )
+				{
+					sounds->PlaySFX( "victory" );
+					while (sounds->victorySound.getStatus() == sf::Sound::Playing);
+					levelData->PrintEndMessage();
+					window->close();
+				}
 			}
 		}
 	}
@@ -116,7 +126,7 @@ private:
 public:
 	World( sf::RenderWindow *w, InputHandler *i, LevelData *ld, Properties *p, sf::View *v, Sounds *s, Textures *t )
 	{
-		player = new Player( w, i, &(ld->playerPosition), p, t );
+		player = new Player( w, i, &(ld->playerPosition), p, t, s );
 		camera = new Camera( w, p, v, player );
 		walls = &(ld->walls);
 		coins = &(ld->coins);
@@ -157,7 +167,6 @@ public:
 		camera->UpdateCamera();
 		bg.setPosition( view->getCenter() );
 		sounds->PlayMusic();
-		levelData->CheckGameStatus();
 		UI->Update( levelData->coinCounter, view->getCenter() );
 	}
 

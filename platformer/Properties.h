@@ -12,7 +12,7 @@ struct Properties
 	int WINDOW_H = 800;
 	int WINDOW_W = 600;
 
-	bool cameraGuidesOn = false;
+	bool cameraGuidesOn = true;
 	void ToggleCameraGuides()
 	{
 		cameraGuidesOn = !cameraGuidesOn;

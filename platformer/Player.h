@@ -6,6 +6,7 @@
 #include "Properties.h"
 #include "InputHandler.h"
 #include "Textures.h"
+#include "Sounds.h"
 
 class Player
 {
@@ -16,8 +17,9 @@ private:
 	Properties *properties;
 	sf::Vector2f velocity, acceleration;
 	Textures *textures;
+	Sounds *sounds;
 
-	bool isGrounded, canStillJump, isSafeToJump, hasCut, hasJumped;
+	bool isGrounded, canStillJump, isSafeToJump, hasCut, hasJumped, hasPlayedJumpSound;
 	int FC_isHoldingJump, FC_isSafeToJump;
 
 	//////////////////////////////////////////////
@@ -169,12 +171,13 @@ private:
 	}
 
 public:
-	Player( sf::RenderWindow *w, InputHandler *i, sf::Vector2f *pos, Properties *p, Textures *t )
+	Player( sf::RenderWindow *w, InputHandler *i, sf::Vector2f *pos, Properties *p, Textures *t, Sounds *s )
 	{
 		window = w;
 		inputHandler = i;
 		properties = p;
 		textures = t;
+		sounds = s;
 		canStillJump = false;
 		hasCut = false;
 		isGrounded = false;
@@ -262,6 +265,17 @@ public:
 		if ( inputHandler->jumpPressed && canStillJump && isSafeToJump && !hasJumped )
 		{
 			Jump();
+
+			/*if ( !hasPlayedJumpSound )
+			{
+				sounds->PlaySFX( "jump" );
+				hasPlayedJumpSound = true;
+			}*/
+
+			if ( isGrounded )
+			{
+				sounds->PlaySFX( "jump" );
+			}
 		}
 		else if ( hasCut )
 		{
